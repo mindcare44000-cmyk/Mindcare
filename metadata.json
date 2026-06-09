@@ -1,0 +1,6 @@
+{
+  "name": "MindCare",
+  "description": "Une page blanche au format téléphone avec le titre MindCare.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
