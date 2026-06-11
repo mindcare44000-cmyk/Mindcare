@@ -8,6 +8,7 @@ export interface UserProfile {
   badges: string[];
   notificationsEnabled: boolean;
   gdprAccepted: boolean;
+  mindyEmoji?: string;
 }
 
 export interface OnboardingAnswers {
@@ -37,6 +38,17 @@ export interface ChatMessage {
   sender: "user" | "mindy" | "system";
   text: string;
   timestamp: string;
+  exerciseSuggested?: {
+    id: string;
+    title: string;
+    duration: string;
+    description: string;
+    category: string;
+    color: string;
+    badgeEffect: string;
+    icon: string;
+  };
+  exerciseActionState?: "pending" | "started" | "postponed";
 }
 
 export interface Exercise {

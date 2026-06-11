@@ -90,8 +90,8 @@ export default function Auth({ currentPath, setPath, userProfile, updateProfile 
       setError("Merci d'indiquer un e-mail valide pour recevoir ton lien.");
       return;
     }
-    if (password.length < 5) {
-      setError("Ton mot de passe doit mesurer au moins 5 caractères.");
+    if (password.length < 8) {
+      setError("Ton mot de passe doit mesurer au moins 8 caractères.");
       return;
     }
     if (!cguChecked || !rgpdChecked || !medicalChecked) {
@@ -152,7 +152,7 @@ export default function Auth({ currentPath, setPath, userProfile, updateProfile 
   };
 
   return (
-    <div className="flex-1 flex flex-col justify-between px-5 py-4 select-none relative overflow-x-hidden overflow-y-auto min-h-0 w-full max-w-md mx-auto">
+    <div className="flex-1 flex flex-col justify-between px-5 pt-7 pb-4 select-none relative overflow-x-hidden overflow-y-auto min-h-0 w-full max-w-md mx-auto h-full max-h-full" id="auth-page-root">
       
       {/* Absolute background visual touch */}
       <div className="absolute top-0 right-0 w-32 h-32 rounded-full bg-brand-lavender/20 blur-3xl pointer-events-none" />
@@ -312,7 +312,7 @@ export default function Auth({ currentPath, setPath, userProfile, updateProfile 
                       type={showPassword ? "text" : "password"}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Minimum 5 caractères"
+                      placeholder="Minimum 8 caractères"
                       className="w-full bg-zinc-100/80 border border-zinc-200/50 rounded-xl py-3 pl-4 pr-11 text-xs focus:outline-none focus:border-brand-medium focus:bg-white focus:ring-4 focus:ring-brand-lavender/30 transition-all font-medium text-neutral-dark placeholder-zinc-400"
                     />
                     <button
@@ -324,6 +324,13 @@ export default function Auth({ currentPath, setPath, userProfile, updateProfile 
                       {showPassword ? <EyeOff className="w-4 h-4 text-zinc-500" /> : <Eye className="w-4 h-4 text-zinc-500" />}
                     </button>
                   </div>
+                  {password.length > 0 && (
+                    <div className="flex justify-between items-center px-1 mt-0.5">
+                      <span className={`text-[10px] font-medium transition-colors ${password.length >= 8 ? "text-emerald-500" : "text-zinc-500"}`}>
+                        {password.length} / 8 caractères {password.length >= 8 ? "✓" : ""}
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Customized check sliders/boxes */}

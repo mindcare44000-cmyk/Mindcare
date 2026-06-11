@@ -14,6 +14,97 @@ const STARTERS = [
   "🧘 Propose-moi un exercice",
 ];
 
+const EXERCISE_CATALOG_CARDS = [
+  {
+    id: "coherence-cardiaque",
+    title: "Cohérence Cardiaque",
+    duration: "3 min",
+    description: "Prends un temps pour équilibrer ton rythme cardiaque et apaiser tes tensions physiques.",
+    category: "Respiration",
+    color: "bg-teal-500",
+    badgeEffect: "Apaisement",
+    icon: "🧘",
+    keywords: ["stress", "anxieu", "anxiété", "coeur", "respir", "cardiaque", "souffler", "battement", "angoisse", "panique"]
+  },
+  {
+    id: "respiration-carree",
+    title: "Respiration Carrée",
+    duration: "4 min",
+    description: "Une respiration structurée pour chasser les pensées de fond et canaliser ton focus.",
+    category: "Respiration",
+    color: "bg-blue-500",
+    badgeEffect: "Focus",
+    icon: "🟩",
+    keywords: ["concentr", "attention", "pensée", "mental", "focus", "rumination", "bloqué", "idées noire", "carre"]
+  },
+  {
+    id: "ancrage-sensoriel",
+    title: "Ancrage Sensoriel",
+    duration: "5 min",
+    description: "La méthode d'ancrage 5-4-3-2-1 pour te reconnecter à l'instant présent en toute douceur.",
+    category: "Ancrage",
+    color: "bg-amber-500",
+    badgeEffect: "Clarté/Calme",
+    icon: "👁",
+    keywords: ["perdu", "réalité", "panique", "peur", "ancrage", "capteur", "cinq", "sensoriel", "crise d'angoisse", "angoisse intense"]
+  },
+  {
+    id: "scan-corporel",
+    title: "Scan Corporel",
+    duration: "5 min",
+    description: "Un voyage attentif à travers ton corps entier pour dénouer les crispations accumulées.",
+    category: "Corps",
+    color: "bg-purple-500",
+    badgeEffect: "Détente",
+    icon: "💫",
+    keywords: ["corps", "tendu", "muscle", "dos", "physique", "fatigue", "douleur", "somat", "crisp"]
+  },
+  {
+    id: "stretch",
+    title: "Stretch & Soupir",
+    duration: "2 min",
+    description: "Deux minutes d'étirement simples pour libérer le diaphragme de l'étau du stress.",
+    category: "Corps",
+    color: "bg-indigo-500",
+    badgeEffect: "Déblocage",
+    icon: "🧍",
+    keywords: ["etir", "stretch", "diaphragme", "thorax", "soupir", "mouvement", "bloquer", "poitrine serrée"]
+  },
+  {
+    id: "affirmations",
+    title: "Affirmations Positives",
+    duration: "2 min",
+    description: "Une douce sélection de paroles compatissantes pour nourrir l'estime de soi.",
+    category: "Visualisation",
+    color: "bg-rose-500",
+    badgeEffect: "Estime",
+    icon: "⭐",
+    keywords: ["triste", "nul", "confiance", "culpabilité", "peine", "deprim", "cafard", "doute", "affirmation", "motiver"]
+  },
+  {
+    id: "meditation-nuages",
+    title: "Méditation des Nuages",
+    duration: "3 min",
+    description: "Une visualisation aérienne pour souffler doucement tes pensées agitées vers l'horizon.",
+    category: "Visualisation",
+    color: "bg-sky-500",
+    badgeEffect: "Légèreté",
+    icon: "☁",
+    keywords: ["sommeil", "nuage", "insomnie", "ciel", "imaginer", "dort", "dormir", "nuit", "flotter"]
+  },
+  {
+    id: "gratitude",
+    title: "3 Gratitudes du Jour",
+    duration: "3 min",
+    description: "Met en lumière trois souvenirs doux de ta journée pour rééduquer ton précieux regard.",
+    category: "Écriture",
+    color: "bg-emerald-500",
+    badgeEffect: "Positivité",
+    icon: "🙏",
+    keywords: ["merci", "positif", "reconnaissant", "gratitude", "bonheur", "plaisir", "journée"]
+  }
+];
+
 export default function Chatbot({ setPath, userProfile }: ChatbotProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
@@ -36,11 +127,45 @@ export default function Chatbot({ setPath, userProfile }: ChatbotProps) {
   // Custom interactive modals for options
   const [activeModal, setActiveModal] = useState<string | null>(null);
 
-  const bottomRef = useRef<HTMLDivElement>(null);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, loading]);
+    if (!window.visualViewport) return;
+
+    const handleResize = () => {
+      const vv = window.visualViewport;
+      if (!vv) return;
+      const diff = window.innerHeight - vv.height;
+      if (diff > 80) {
+        setKeyboardHeight(diff);
+      } else {
+        setKeyboardHeight(0);
+      }
+    };
+
+    window.visualViewport.addEventListener("resize", handleResize);
+    window.visualViewport.addEventListener("scroll", handleResize);
+    handleResize();
+
+    return () => {
+      window.visualViewport?.removeEventListener("resize", handleResize);
+      window.visualViewport?.removeEventListener("scroll", handleResize);
+    };
+  }, []);
+
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (scrollAreaRef.current) {
+        scrollAreaRef.current.scrollTo({
+          top: scrollAreaRef.current.scrollHeight,
+          behavior: "smooth",
+        });
+      }
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [messages, loading, keyboardHeight]);
 
   const handleSendMessage = async (textToSend: string) => {
     if (!textToSend.trim()) return;
@@ -88,11 +213,37 @@ export default function Chatbot({ setPath, userProfile }: ChatbotProps) {
       const data = await res.json();
       const replyText = data?.text || "Pardon, de quoi souhaites-tu parler ? Inspire doucement...";
       
+      // Perform contextual analysis of dialogue to suggest a matching exercise card dynamically
+      const combinedTextForMatching = (textToSend + " " + replyText).toLowerCase();
+      let matchedExercise = null;
+
+      const explicitAsk = ["exercice", "activité", "proposer", "conseille", "faire", "pratique", "aide-moi"].some(kw => textToSend.toLowerCase().includes(kw));
+      const found = EXERCISE_CATALOG_CARDS.find(ex => ex.keywords.some(kw => combinedTextForMatching.includes(kw)));
+      
+      if (found) {
+        matchedExercise = found;
+      } else if (explicitAsk) {
+        matchedExercise = EXERCISE_CATALOG_CARDS[0]; // Cohérence Cardiaque as secure fallback
+      }
+
       const mindyMsg: ChatMessage = {
         id: Math.random().toString(36).substring(7),
         sender: "mindy",
         text: replyText,
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        ...(matchedExercise && {
+          exerciseSuggested: {
+            id: matchedExercise.id,
+            title: matchedExercise.title,
+            duration: matchedExercise.duration,
+            description: matchedExercise.description,
+            category: matchedExercise.category,
+            color: matchedExercise.color,
+            badgeEffect: matchedExercise.badgeEffect,
+            icon: matchedExercise.icon,
+          },
+          exerciseActionState: "pending" as const
+        })
       };
       
       // Deliberate 1.2s typing transition simulator to enhance reality & feel (Reference 2)
@@ -115,6 +266,40 @@ export default function Chatbot({ setPath, userProfile }: ChatbotProps) {
         setLoading(false);
       }, 1200);
     }
+  };
+
+  const handleAcceptExercise = (msgId: string, exId: string) => {
+    // 1. Mark as started
+    setMessages((prev) =>
+      prev.map((m) =>
+        m.id === msgId ? { ...m, exerciseActionState: "started" } : m
+      )
+    );
+    // 2. Redirect to specific exercise screen
+    setTimeout(() => {
+      setPath(`exercices/${exId}`);
+    }, 450);
+  };
+
+  const handlePostponeExercise = (msgId: string) => {
+    // 1. Mark as postponed
+    setMessages((prev) =>
+      prev.map((m) =>
+        m.id === msgId ? { ...m, exerciseActionState: "postponed" } : m
+      )
+    );
+    // 2. Add gentle delay, then Mindy responds to postponement
+    setLoading(true);
+    setTimeout(() => {
+      const followUpMsg: ChatMessage = {
+        id: Math.random().toString(36).substring(7),
+        sender: "mindy",
+        text: "Pas de soucis, prends tout ton temps 🌱 Nous ferons cela quand tu te sentiras disponible et prêt. Dis-moi si tu as besoin d'autre chose en attendant.",
+        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      };
+      setMessages((prev) => [...prev, followUpMsg]);
+      setLoading(false);
+    }, 1200);
   };
 
   // Specific Actions from action dots
@@ -158,41 +343,51 @@ export default function Chatbot({ setPath, userProfile }: ChatbotProps) {
   };
 
   return (
-    <div className="flex-1 flex flex-col justify-between h-full bg-white relative select-none w-full max-w-md mx-auto" id="chatbot-page-root">
+    <div 
+      className="flex-1 flex flex-col justify-between min-h-0 h-full bg-[#FAF8FD] relative select-none w-full max-w-md mx-auto max-h-full" 
+      id="chatbot-page-root"
+    >
       
       {/* 1. FIXED HEADER AREA */}
-      <div className="px-4 py-3 bg-white border-b border-zinc-100 flex items-center justify-between z-20 shrink-0 select-none relative" id="chatbot-header">
+      <div className="px-5 py-4 bg-white border-b border-zinc-100 flex items-center justify-between z-20 shrink-0 select-none relative shadow-xs" id="chatbot-header">
         {/* Back button (←) inside a styled light circle */}
         <button
           onClick={() => setPath("dashboard")}
-          className="w-11 h-11 rounded-full bg-zinc-100/80 hover:bg-zinc-200 flex items-center justify-center text-zinc-800 transition active:scale-95 cursor-pointer shrink-0"
+          className="w-10 h-10 rounded-full bg-zinc-50 hover:bg-zinc-100 flex items-center justify-center text-zinc-800 border border-zinc-100 transition active:scale-95 cursor-pointer shrink-0"
           id="chatbot-back-btn"
         >
-          <i className="ti ti-arrow-left text-xl"></i>
+          <i className="ti ti-arrow-left text-lg"></i>
         </button>
 
         {/* Centered Companion header details */}
         <div className="flex-1 flex items-center justify-center space-x-3 px-2">
-          {/* Custom professional Dual-Tone circle avatar matching the mockup exactly */}
+          {/* Custom professional Dual-Tone circle avatar with pulsing status dot */}
           <div className="relative shrink-0" id="chatbot-avatar-wrapper">
-            <div className="w-11 h-11 rounded-full bg-[#E5E1FA] flex items-center justify-center shadow-xs">
-              <div className="w-5.5 h-5.5 rounded-full bg-[#7C6FF7]" />
+            <div className="w-10 h-10 rounded-full bg-brand-lavender/60 flex items-center justify-center shadow-xs relative">
+              <span className="text-sm select-none">{userProfile.mindyEmoji || ""}</span>
+              {/* Pulsing online status circle badge */}
+              <div className="absolute right-[-1px] bottom-[-1px] w-3 h-3 rounded-full bg-[#4ade80] ring-2 ring-white flex items-center justify-center">
+                <span className="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-[#22c55e] opacity-75"></span>
+              </div>
             </div>
           </div>
 
           <div className="leading-tight flex flex-col items-start">
             <h4 className="font-bold text-base text-zinc-900 tracking-tight" id="chatbot-companion-title">Mindy</h4>
-            <span className="text-[11px] text-zinc-500 font-medium">Ton compagnon IA</span>
+            <span className="text-[11px] text-zinc-500 font-semibold flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span>
+              En ligne • Compagnon IA
+            </span>
           </div>
         </div>
 
         {/* 3 dots action button (⋮) inside a styled light circle */}
         <button
           onClick={() => setShowDropdown(!showDropdown)}
-          className="w-11 h-11 rounded-full bg-zinc-100/80 hover:bg-zinc-200 flex items-center justify-center text-zinc-850 transition active:scale-95 cursor-pointer shrink-0"
+          className="w-10 h-10 rounded-full bg-zinc-50 hover:bg-zinc-100 flex items-center justify-center text-zinc-700 border border-zinc-100 transition active:scale-95 cursor-pointer shrink-0"
           id="chatbot-options-btn"
         >
-          <i className="ti ti-dots-vertical text-xl"></i>
+          <i className="ti ti-dots-vertical text-lg"></i>
         </button>
 
         {/* Drodown dropdown dialog container */}
@@ -260,16 +455,20 @@ export default function Chatbot({ setPath, userProfile }: ChatbotProps) {
       </div>
 
       {/* 2. MESSAGES LIST HOUSING */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4" id="messages-scroll-area">
+      <div 
+        ref={scrollAreaRef}
+        className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-4 space-y-4"  
+        id="messages-scroll-area"
+      >
         {/* Centered initial time marker stamp (Reference 1) */}
         <div className="text-center py-1 select-none" id="timestamp-marker">
-          <span className="text-[11px] text-zinc-300 font-medium tracking-wide">
+          <span className="text-[11px] text-zinc-450 font-bold tracking-wide bg-zinc-200/50 px-2.5 py-1 rounded-full">
             Aujourd'hui · 09:14
           </span>
         </div>
 
         {messages.length === 0 ? (
-          <div className="text-center py-10 text-zinc-400 text-xs italic">
+          <div className="text-center py-12 text-zinc-400 text-xs italic">
             La conversation a été effacée. Écris un mot pour murmurer à Mindy.
           </div>
         ) : (
@@ -284,7 +483,7 @@ export default function Chatbot({ setPath, userProfile }: ChatbotProps) {
                     key={msg.id}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="p-4 bg-red-50 border border-red-100 text-red-800 rounded-3xl text-xs leading-relaxed space-y-2 select-none"
+                    className="p-4 bg-red-50 border border-red-100 text-red-800 rounded-2xl text-xs leading-relaxed space-y-2 select-none"
                     id={`sys-msg-${msg.id}`}
                   >
                     <div className="font-bold flex items-center space-x-1.5 text-red-700">
@@ -305,30 +504,109 @@ export default function Chatbot({ setPath, userProfile }: ChatbotProps) {
               }
 
               return (
-                <div
+                <motion.div
                   key={msg.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
                   className={`flex ${isMindy ? "justify-start" : "justify-end"} items-end space-x-2`}
                   id={`chat-row-${msg.id}`}
                 >
                   {/* Left avatar beside Mindy bubble (Reference 2) */}
                   {isMindy && (
-                    <div className="w-7 h-7 rounded-full bg-[#EFEFFF] flex items-center justify-center shrink-0 border border-[#7C6FF7]/15 select-none shadow-2xs">
-                      <span className="text-xs">🌸</span>
+                    <div className="w-8 h-8 rounded-full bg-brand-lavender/50 flex items-center justify-center shrink-0 border border-brand-lavender/30 select-none shadow-3xs">
+                      <span className="text-xs">{userProfile.mindyEmoji || ""}</span>
                     </div>
                   )}
 
                   <div className="flex flex-col max-w-[78%]">
                     <div
-                      className={`px-4 py-3 text-[14px] leading-relaxed select-text transition-all ${
+                      className={`px-4.5 py-3 text-[14.5px] leading-relaxed select-text transition-all ${
                         isMindy
-                          ? "bg-[#F2F2F2] text-zinc-800 rounded-[20px] rounded-tl-[4px]"
-                          : "bg-[#1A1A1A] text-white rounded-[20px] rounded-br-[4px] shadow-sm"
+                          ? "bg-white text-zinc-800 rounded-2xl rounded-tl-xs border border-brand-lavender/50 shadow-3xs font-medium"
+                          : "bg-gradient-to-br from-brand-medium to-[#9D76F5] text-white rounded-2xl rounded-br-xs shadow-xs font-semibold"
                       }`}
                     >
                       <p>{msg.text}</p>
                     </div>
+
+                    {/* SUGGESTED EXERCISE ATTACHED CARD */}
+                    {isMindy && msg.exerciseSuggested && (
+                      <div 
+                        className={`mt-2 border rounded-2xl overflow-hidden bg-white text-zinc-800 shadow-3xs transition-all ${
+                          msg.exerciseActionState === "started" || msg.exerciseActionState === "postponed" 
+                            ? "opacity-60 grayscale-[15%]" 
+                            : ""
+                        }`}
+                        style={{ borderColor: "#EBE6F8" }}
+                        id={`exercise-card-${msg.id}`}
+                      >
+                        {/* Interactive Colored Top Bar Indicator */}
+                        <div className={`h-1.5 w-full ${msg.exerciseSuggested.color}`} />
+                        
+                        <div className="p-3.5 space-y-3">
+                          {/* Top row: Icon + Title + Category & Duration + Badge */}
+                          <div className="flex items-start justify-between space-x-2">
+                            <div className="flex items-center space-x-2.5">
+                              <div className="w-9 h-9 rounded-xl bg-zinc-50 flex items-center justify-center text-lg shadow-4xs shrink-0 select-none">
+                                {msg.exerciseSuggested.icon}
+                              </div>
+                              <div className="text-left">
+                                <h5 className="font-bold text-[13px] text-zinc-900 leading-snug">
+                                  {msg.exerciseSuggested.title}
+                                </h5>
+                                <div className="flex items-center space-x-1.5 mt-0.5 text-[9.5px] text-zinc-400 font-semibold uppercase tracking-wider">
+                                  <span>{msg.exerciseSuggested.category}</span>
+                                  <span>•</span>
+                                  <span>⏱ {msg.exerciseSuggested.duration}</span>
+                                </div>
+                              </div>
+                            </div>
+
+                            <span className="text-[9px] font-bold text-brand-medium bg-brand-lavender/54 px-2.5 py-0.5 rounded-full shrink-0 select-none">
+                              {msg.exerciseSuggested.badgeEffect}
+                            </span>
+                          </div>
+
+                          {/* Short description text */}
+                          <p className="text-[11px] text-zinc-550 leading-relaxed text-left">
+                            {msg.exerciseSuggested.description}
+                          </p>
+
+                          {/* CTA Interactive buttons */}
+                          {msg.exerciseActionState === "pending" && (
+                            <div className="flex items-center space-x-2 pt-1 select-none">
+                              <button
+                                onClick={() => handleAcceptExercise(msg.id, msg.exerciseSuggested!.id)}
+                                className="flex-1 py-1.5 bg-zinc-950 hover:bg-zinc-805 text-white font-bold rounded-xl text-[11px] transition active:scale-97 cursor-pointer"
+                              >
+                                Commencer
+                              </button>
+                              <button
+                                onClick={() => handlePostponeExercise(msg.id)}
+                                className="px-3.5 py-1.5 border border-zinc-250 hover:bg-zinc-55 text-zinc-550 font-bold rounded-xl text-[11px] transition active:scale-97 cursor-pointer"
+                              >
+                                Plus tard
+                              </button>
+                            </div>
+                          )}
+
+                          {msg.exerciseActionState === "started" && (
+                            <div className="flex items-center justify-center space-x-1.5 py-1.5 text-emerald-600 bg-emerald-50/70 border border-emerald-100 rounded-xl text-[10px] font-bold">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                              <span>En cours d'activité</span>
+                            </div>
+                          )}
+
+                          {msg.exerciseActionState === "postponed" && (
+                            <div className="flex items-center justify-center space-x-1.5 py-1.5 text-zinc-400 bg-zinc-100 rounded-xl text-[10px] font-bold">
+                              <span>Remis à plus tard</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </div>
-                </div>
+                </motion.div>
               );
             })}
           </div>
@@ -337,27 +615,28 @@ export default function Chatbot({ setPath, userProfile }: ChatbotProps) {
         {/* Typing loading indicators with 3 bouncing dots (Reference 2) */}
         {loading && (
           <div className="flex items-end space-x-2" id="typing-indicator-wrapper">
-            <div className="w-7 h-7 rounded-full bg-[#EFEFFF] flex items-center justify-center shrink-0 border border-[#7C6FF7]/15">
-              <span className="text-xs">🌸</span>
+            <div className="w-8 h-8 rounded-full bg-brand-lavender/50 flex items-center justify-center shrink-0 border border-brand-lavender/30 shadow-3xs">
+              <span className="text-xs">{userProfile.mindyEmoji || ""}</span>
             </div>
-            <div className="bg-[#F2F2F2] rounded-[20px] rounded-tl-[4px] px-4 py-3.5 flex items-center space-x-1 w-16">
-              <span className="w-1.5 h-1.5 bg-zinc-400 rounded-full animate-bounce [animation-delay:0s]" />
-              <span className="w-1.5 h-1.5 bg-zinc-400 rounded-full animate-bounce [animation-delay:0.2s]" />
-              <span className="w-1.5 h-1.5 bg-zinc-400 rounded-full animate-bounce [animation-delay:0.4s]" />
+            <div className="bg-white border border-brand-lavender/40 shadow-3xs rounded-2xl rounded-tl-xs px-4 py-3 flex items-center space-x-1.5 w-16">
+              <span className="w-1.5 h-1.5 bg-brand-medium rounded-full animate-bounce [animation-delay:0s]" />
+              <span className="w-1.5 h-1.5 bg-brand-medium rounded-full animate-bounce [animation-delay:0.2s]" />
+              <span className="w-1.5 h-1.5 bg-brand-medium rounded-full animate-bounce [animation-delay:0.4s]" />
             </div>
           </div>
         )}
 
         {/* Quick Suggestion Pills underneath initial welcome layout */}
         {messages.length === 2 && !loading && (
-          <div className="pl-9 pr-2 py-1 space-y-2 select-none" id="suggestions-area">
-            <div className="flex flex-col space-y-2">
+          <div className="pl-10 pr-2 py-1 space-y-2 select-none" id="suggestions-area">
+            <div className="flex flex-col space-y-2 max-w-[85%]">
               {STARTERS.map((text, idx) => (
                 <motion.button
                   key={idx}
-                  whileTap={{ scale: 0.97 }}
+                  whileHover={{ scale: 1.01, y: -0.5 }}
+                  whileTap={{ scale: 0.98 }}
                   onClick={() => handleSendMessage(text)}
-                  className="w-full text-left bg-white border border-zinc-200/90 text-[12px] font-semibold text-zinc-800 py-2.5 px-4 rounded-full transition-all flex items-center space-x-1.5 shadow-2xs hover:bg-zinc-50 active:border-[#7C6FF7]"
+                  className="w-full text-left bg-white border border-brand-lavender/70 text-[12px] font-bold text-zinc-700 py-2.5 px-4 rounded-xl transition-all flex items-center space-x-2.5 shadow-3xs hover:bg-[#FAF5FF] hover:text-brand-medium hover:border-brand-medium/30"
                   id={`starter-btn-${idx}`}
                 >
                   <span>{text}</span>
@@ -367,12 +646,11 @@ export default function Chatbot({ setPath, userProfile }: ChatbotProps) {
           </div>
         )}
 
-        <div ref={bottomRef} />
       </div>
 
       {/* 3. INPUT BAR BOTTOM CONTROLS */}
-      <div className="bg-white border-t border-zinc-100 px-3 py-3.5 pb-4 shrink-0 select-none z-10" id="chatbot-footer-input">
-        <div className="flex items-center space-x-2.5 max-w-md mx-auto">
+      <div className="bg-transparent px-4 py-3 pb-6 shrink-0 select-none z-10" id="chatbot-footer-input">
+        <div className="flex items-center space-x-2.5 max-w-md mx-auto bg-white border border-brand-lavender/80 shadow-xs rounded-full pl-5 pr-1.5 py-1.5 focus-within:ring-2 focus-within:ring-brand-medium/15 focus-within:border-brand-medium transition-all">
           <input
             type="text"
             value={input}
@@ -382,8 +660,8 @@ export default function Chatbot({ setPath, userProfile }: ChatbotProps) {
                 handleSendMessage(input);
               }
             }}
-            placeholder="Écrit à Mindy....."
-            className="flex-1 bg-zinc-100/90 border border-zinc-200/50 rounded-full py-3 px-4.5 text-xs font-semibold focus:outline-none focus:border-[#7C6FF7] focus:bg-white transition-all text-neutral-dark placeholder-zinc-400"
+            placeholder="Écris un message à Mindy..."
+            className="flex-1 bg-transparent border-none text-[13px] font-bold focus:outline-none text-zinc-800 placeholder-zinc-400"
             disabled={loading}
             id="chatbot-text-input"
           />
@@ -392,12 +670,17 @@ export default function Chatbot({ setPath, userProfile }: ChatbotProps) {
             whileTap={!loading && input.trim() ? { scale: 0.94 } : undefined}
             onClick={() => handleSendMessage(input)}
             disabled={loading || !input.trim()}
-            className="w-11 h-11 rounded-full bg-black hover:bg-zinc-800 text-white flex items-center justify-center shrink-0 shadow-sm disabled:bg-zinc-100 disabled:text-zinc-300 transition-all cursor-pointer"
+            className="w-9 h-9 rounded-full bg-brand-medium hover:bg-brand-deep text-white flex items-center justify-center shrink-0 shadow-xs disabled:bg-zinc-100 disabled:text-zinc-300 transition-all cursor-pointer"
             id="chatbot-send-btn"
           >
-            <i className="ti ti-send text-lg"></i>
+            <i className="ti ti-arrow-up text-base font-bold"></i>
           </motion.button>
         </div>
+
+        {/* Medical / Urgency warning label under message input */}
+        <p className="text-center text-[10px] text-zinc-400 font-semibold mt-3 px-4 select-none leading-normal">
+          Mindy est une IA, pas un professionnel de santé. En cas d'urgence, contacte le 15 ou le 3114.
+        </p>
       </div>
 
       {/* --- FLOATING INTERACTIVE ACTION FEEDBACK MODALS --- */}
@@ -420,7 +703,7 @@ export default function Chatbot({ setPath, userProfile }: ChatbotProps) {
               {activeModal === "about" && (
                 <>
                   <div className="w-12 h-12 rounded-full bg-brand-lavender/30 text-[#7C6FF7] flex items-center justify-center mx-auto text-xl">
-                    🌸
+                    {userProfile.mindyEmoji || ""}
                   </div>
                   <div className="space-y-1.5">
                     <h3 className="text-sm font-bold text-zinc-900">À propos de Mindy</h3>

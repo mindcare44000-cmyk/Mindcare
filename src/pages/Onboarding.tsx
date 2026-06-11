@@ -225,7 +225,7 @@ export default function Onboarding({ currentPath, setPath, userProfile, updatePr
   };
 
   return (
-    <div className="flex-1 flex flex-col justify-between px-5 py-4 select-none relative overflow-y-auto min-h-0 w-full max-w-md mx-auto">
+    <div className="flex-1 flex flex-col justify-between px-5 pt-7 pb-4 select-none relative overflow-y-auto overflow-x-hidden min-h-0 w-full max-w-md mx-auto h-full max-h-full" id="onboarding-page-root">
       
       {/* Absolute ambient light spots */}
       <div className="absolute top-[-10%] left-[-10%] w-40 h-40 rounded-full bg-brand-lavender/30 blur-3xl pointer-events-none" />
@@ -330,7 +330,7 @@ export default function Onboarding({ currentPath, setPath, userProfile, updatePr
           </div>
 
           {/* Core Question and Choice Options Block */}
-          <div className="flex-1 flex flex-col justify-center py-4 overflow-y-auto">
+          <div className="flex-1 flex flex-col justify-center py-4">
             <AnimatePresence mode="wait">
               <motion.div
                 key={stepIndex}
@@ -359,7 +359,7 @@ export default function Onboarding({ currentPath, setPath, userProfile, updatePr
                 )}
 
                 {/* Dynamic Choice Buttons - Replaced styled inputs with organic tactile cards */}
-                <div className="space-y-2.5 max-h-[340px] overflow-y-auto pr-0.5">
+                <div className="space-y-2.5 pr-0.5">
                   {currentQ.options.map((opt, oIdx) => {
                     const qId = currentQ.id;
                     const answersVal = answers[qId];

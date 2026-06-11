@@ -1,6 +1,6 @@
 {
   "name": "MindCare",
-  "description": "Une page blanche au format téléphone avec le titre MindCare.",
+  "description": "MindCare : Votre havre d'auto-préservation avec suivi d'humeur quotidien, exercices de respiration guidés, et journal d'intimité sécurisé.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

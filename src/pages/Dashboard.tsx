@@ -67,7 +67,7 @@ export default function Dashboard({ setPath, userProfile, checkIns }: DashboardP
   };
 
   return (
-    <div className="flex-1 flex flex-col bg-zinc-50 select-none pb-8 overflow-y-auto min-h-0 w-full max-w-md mx-auto" id="dashboard-container">
+    <div className="flex-1 flex flex-col bg-zinc-50 select-none pt-3 pb-8 overflow-y-auto overflow-x-hidden min-h-0 w-full max-w-md mx-auto h-full max-h-full" id="dashboard-container">
       
       {/* 1. HEADER AREA: Date, Name, Cloche, Profil */}
       <div className="px-5 pt-5 pb-3 flex justify-between items-start" id="dashboard-header">
@@ -154,7 +154,7 @@ export default function Dashboard({ setPath, userProfile, checkIns }: DashboardP
             id="avatar-core"
           >
             <div className="absolute inset-1 rounded-full border border-white/20" />
-            <span className="text-3xl text-white">🌸</span>
+            <span className="text-3xl text-white select-none">{userProfile.mindyEmoji || ""}</span>
           </motion.div>
         </div>
 
@@ -166,13 +166,14 @@ export default function Dashboard({ setPath, userProfile, checkIns }: DashboardP
 
           <div className="flex justify-center">
             <motion.button
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.04, y: -1 }}
+              whileTap={{ scale: 0.96 }}
               onClick={() => setPath("chatbot")}
-              className="px-5 py-2 hover:bg-zinc-900 hover:text-white transition duration-200 border border-neutral-850/80 rounded-full text-xs font-bold text-zinc-800 bg-white flex items-center space-x-2 cursor-pointer shadow-xs"
+              className="px-6 py-2.5 bg-gradient-to-r from-[#7C6FF7] to-[#9D91FF] text-white hover:from-[#6A5DE6] hover:to-[#8B7FF0] shadow-[0_4px_16px_rgba(124,111,247,0.3)] hover:shadow-[0_6px_22px_rgba(124,111,247,0.45)] transition-all duration-300 rounded-full text-xs font-extrabold flex items-center space-x-2.5 cursor-pointer"
               id="talk-with-mindy-btn"
             >
               <i className="ti ti-message-2 text-sm"></i>
-              <span>Parler avec Mindy</span>
+              <span>Parler à Mindy {userProfile.mindyEmoji ? `${userProfile.mindyEmoji}` : "💜"}</span>
             </motion.button>
           </div>
         </div>

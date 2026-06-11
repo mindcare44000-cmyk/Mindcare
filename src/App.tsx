@@ -7,6 +7,7 @@ import Dashboard from "./pages/Dashboard";
 import Chatbot from "./pages/Chatbot";
 import Exercises from "./pages/Exercises";
 import Settings from "./pages/Settings";
+import History from "./pages/History";
 import { UserProfile, CheckInRecord } from "./types";
 
 export default function App() {
@@ -21,6 +22,7 @@ export default function App() {
     badges: ["first-step"],
     notificationsEnabled: true,
     gdprAccepted: false,
+    mindyEmoji: "🌸",
   });
   const [checkIns, setCheckIns] = useState<CheckInRecord[]>([]);
 
@@ -77,6 +79,15 @@ export default function App() {
                 setPath={setPath}
                 userProfile={userProfile}
                 addCheckIn={addCheckIn}
+              />
+            )}
+
+            {currentPath.startsWith("historique") && (
+              <History
+                currentPath={currentPath}
+                setPath={setPath}
+                userProfile={userProfile}
+                checkIns={checkIns}
               />
             )}
 
