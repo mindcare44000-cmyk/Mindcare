@@ -102,6 +102,17 @@ const EXERCISE_CATALOG_CARDS = [
     badgeEffect: "Positivité",
     icon: "🙏",
     keywords: ["merci", "positif", "reconnaissant", "gratitude", "bonheur", "plaisir", "journée"]
+  },
+  {
+    id: "journal-sos",
+    title: "Journal de décharge (SOS)",
+    duration: "Libre",
+    description: "Un espace d'expression libre et confidentiel pour vider tout ton sac sans filtre.",
+    category: "Écriture",
+    color: "bg-red-500",
+    badgeEffect: "Libération",
+    icon: "✍️",
+    keywords: ["vider", "écrire", "sac", "pleurer", "colère", "haine", "journal"]
   }
 ];
 
@@ -202,8 +213,43 @@ export default function Chatbot({ setPath, userProfile }: ChatbotProps) {
 
     try {
       // Setup payload instruction matching the prompt charter
-      const systemInstruction = 
-        "Tu es Mindy, le compagnon IA bienveillant de l'application MindCare. Tu es une voix d'auto-préservation, douce, zène et calme. Tu as interdiction absolue de faire la moindre prescription, de poser un diagnostic, de parler de psychopathologie lourde ou de rassurer de façon clinique froide. Tutoyie l'utilisateur doucement en français, utilise des phrases courtes, apaise-le, et propose-lui de faire un et un seul exercice adapté pour se détendre (par exemple de la respiration ou s'exprimer dans le journal SOS) s'il se sent lourd. N'ajoute pas de fioritures.";
+      const systemInstruction = `IDENTITÉ :
+Tu es Mindy, un compagnon de bien-être mental chaleureux, doux et profondément empathique.
+Ton objectif est d'offrir un espace de parole sécurisant et non-jugeant.
+DIRECTIVES DE COMMUNICATION :
+1. TUTOIEMENT : Utilise TOUJOURS le "tu". C'est essentiel pour la proximité.
+2. TON : Chaleureux, validant, apaisant. Ne sois pas trop formel ni trop clinique.
+3. STRUCTURE : Fais des réponses relativement courtes pour favoriser l'échange.
+4. MISE EN FORME : Uniquement du texte brut. INTERDICTION d'utiliser du gras (**), de l'italique (*) ou des listes à puces complexes.
+CADRE ÉTHIQUE ET SÉCURITÉ :
+- PAS DE DIAGNOSTIC : Tu ne peux pas dire "Tu es dépressif" ou "C'est de l'anxiété généralisée". Préfère : "Ce que tu décris ressemble à un moment de grand stress".
+- PAS DE MÉDICAMENTS : Ne conseille jamais de traitement. Renvoie vers un médecin.
+- SITUATIONS SENSIBLES ET RÉPÉTITION DES RESSOURCES :
+ * PREMIÈRE FOIS dans la session : Message complet (empathie, proposition claire d'appeler, numéro concerné, proposition d'aide pour préparer l'appel).
+ * DEUXIÈME FOIS dans la session : Version abrégée (rappel court du numéro, mention rapide de l'aide à la préparation, ton plus synthétique).
+ * À PARTIR DE LA TROISIÈME FOIS : Si le risque critique est toujours détecté, rappeler les ressources d’aide de manière courte, sans insister inutilement, et maintenir l’orientation vers une aide humaine.
+ACTIONS SPÉCIALES (BALISES D'EXERCICES) :
+Si tu juges qu'un exercice peut aider l'utilisateur, insère UNE SEULE des balises suivantes à la toute fin de ton message :
+
+1. CRISE D'ANGOISSE / PANIQUE / STRESS AIGU (Choisir l'un des trois) :
+ - [ACTION:EXERCISE:COHERENCE] (Respiration rythmée)
+ - [ACTION:EXERCISE:ANCRAGE] (Focus sur les sens)
+ - [ACTION:EXERCISE:RESPIRATION_CARREE] (Stabilisation)
+2. BESOIN DE DÉTENTE / RELÂCHEMENT PHYSIQUE :
+ - [ACTION:EXERCISE:SCAN_CORPOREL]
+3. MORAL BAS / BESOIN DE POSITIVITÉ (Choisir l'un des trois) :
+ - [ACTION:EXERCISE:AFFIRMATIONS]
+ - [ACTION:EXERCISE:GRATITUDE]
+ - [ACTION:EXERCISE:MEDITATION_NUAGE]
+4. BESOIN DE DÉCHARGE ÉMOTIONNELLE / VIDER SON SAC :
+ - [ACTION:EXERCISE:VIDER_SAC]
+RÈGLES CRUCIALES POUR LES BALISES :
+- INTERDICTION ABSOLUE de décrire l'exercice ou de donner des instructions techniques dans ton texte.
+- Mentionne juste très brièvement qu'un exercice spécifique peut aider.
+- Une seule balise par réponse, placée tout à la fin.
+- Tu ne peux proposer un exercice qu'une seule fois par session.
+MÉTHODE D'ACCOMPAGNEMENT :
+Si tu orientes vers un professionnel (ex: Alcool Info Service), propose toujours de "préparer l'appel ensemble" ou de simuler le début de la conversation pour réduire l'appréhension de l'utilisateur.`;
 
       const res = await fetch("/api/gemini/generate", {
         method: "POST",
@@ -211,19 +257,52 @@ export default function Chatbot({ setPath, userProfile }: ChatbotProps) {
         body: JSON.stringify({ prompt: textToSend, systemInstruction }),
       });
       const data = await res.json();
-      const replyText = data?.text || "Pardon, de quoi souhaites-tu parler ? Inspire doucement...";
+      let replyText = data?.text || "Pardon, de quoi souhaites-tu parler ? Inspire doucement...";
       
-      // Perform contextual analysis of dialogue to suggest a matching exercise card dynamically
-      const combinedTextForMatching = (textToSend + " " + replyText).toLowerCase();
+      // Try to find if there is an Action tag in the replyText
       let matchedExercise = null;
-
-      const explicitAsk = ["exercice", "activité", "proposer", "conseille", "faire", "pratique", "aide-moi"].some(kw => textToSend.toLowerCase().includes(kw));
-      const found = EXERCISE_CATALOG_CARDS.find(ex => ex.keywords.some(kw => combinedTextForMatching.includes(kw)));
+      const tagRegex = /\[ACTION:EXERCISE:([A-Z_]+)\]/;
+      const match = replyText.match(tagRegex);
       
-      if (found) {
-        matchedExercise = found;
-      } else if (explicitAsk) {
-        matchedExercise = EXERCISE_CATALOG_CARDS[0]; // Cohérence Cardiaque as secure fallback
+      // Clean up tag from text displayed to the user
+      if (match) {
+        replyText = replyText.replace(tagRegex, "").trim();
+      }
+
+      // Respect session constraint: only one exercise recommendation per session
+      const alreadyProposed = messages.some((m) => m.exerciseSuggested);
+
+      if (!alreadyProposed) {
+        if (match) {
+          const actionType = match[1];
+          let targetId = "";
+          if (actionType === "COHERENCE") targetId = "coherence-cardiaque";
+          else if (actionType === "RESPIRATION_CARREE") targetId = "respiration-carree";
+          else if (actionType === "ANCRAGE") targetId = "ancrage-sensoriel";
+          else if (actionType === "SCAN_CORPOREL") targetId = "scan-corporel";
+          else if (actionType === "AFFIRMATIONS") targetId = "affirmations";
+          else if (actionType === "GRATITUDE") targetId = "gratitude";
+          else if (actionType === "MEDITATION_NUAGE") targetId = "meditation-nuages";
+          else if (actionType === "VIDER_SAC") targetId = "journal-sos";
+
+          if (targetId) {
+            const found = EXERCISE_CATALOG_CARDS.find((ex) => ex.id === targetId);
+            if (found) {
+              matchedExercise = found;
+            }
+          }
+        } else {
+          // Fallback keyword search for general questions
+          const combinedTextForMatching = (textToSend + " " + replyText).toLowerCase();
+          const explicitAsk = ["exercice", "activité", "proposer", "conseille", "faire", "pratique", "aide-moi"].some(kw => textToSend.toLowerCase().includes(kw));
+          const found = EXERCISE_CATALOG_CARDS.find(ex => ex.id !== "journal-sos" && ex.keywords.some(kw => combinedTextForMatching.includes(kw)));
+          
+          if (found) {
+            matchedExercise = found;
+          } else if (explicitAsk) {
+            matchedExercise = EXERCISE_CATALOG_CARDS[0]; // Cohérence Cardiaque
+          }
+        }
       }
 
       const mindyMsg: ChatMessage = {

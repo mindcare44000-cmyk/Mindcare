@@ -135,6 +135,10 @@ export default function Auth({ currentPath, setPath, userProfile, updateProfile 
       setError("Le mot de passe est obligatoire pour se connecter.");
       return;
     }
+    if (password.length < 8) {
+      setError("Ton mot de passe doit mesurer au moins 8 caractères.");
+      return;
+    }
 
     setError("");
     setIsSubmitting(true);
@@ -565,7 +569,7 @@ export default function Auth({ currentPath, setPath, userProfile, updateProfile 
                       type={showPassword ? "text" : "password"}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Entre ton mot de passe"
+                      placeholder="Minimum 8 caractères"
                       className="w-full bg-zinc-100/80 border border-zinc-200/50 rounded-xl py-3 pl-4 pr-11 text-xs focus:outline-none focus:border-brand-medium focus:bg-white focus:ring-4 focus:ring-brand-lavender/30 transition font-medium text-neutral-dark placeholder-zinc-400"
                     />
                     <button
@@ -576,6 +580,13 @@ export default function Auth({ currentPath, setPath, userProfile, updateProfile 
                       {showPassword ? <EyeOff className="w-4 h-4 text-zinc-500" /> : <Eye className="w-4 h-4 text-zinc-500" />}
                     </button>
                   </div>
+                  {password.length > 0 && (
+                    <div className="flex justify-between items-center px-1 mt-0.5">
+                      <span className={`text-[10px] font-medium transition-colors ${password.length >= 8 ? "text-emerald-500" : "text-zinc-500"}`}>
+                        {password.length} / 8 caractères {password.length >= 8 ? "✓" : ""}
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 <motion.button
