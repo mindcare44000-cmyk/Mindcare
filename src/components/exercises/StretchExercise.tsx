@@ -3,41 +3,142 @@ import { motion, AnimatePresence } from "motion/react";
 import { ChevronLeft, ChevronRight, Activity, Sparkles, Check } from "lucide-react";
 import { BaseExerciseProps } from "./BaseExerciseProps";
 
+const ALL_MOVEMENTS = [
+  {
+    title: "Élévation Céleste",
+    instructions: "Lève lentement les deux bras vers le ciel en inspirant profondément par le nez. Sens ta colonne vertébrale s'allonger doucement. Grandis-toi au maximum de tes capacités de l'instant, sans forcer.",
+    focus: "Ouverture thoracique & étirement doux",
+    ambientClass: "from-orange-100/60 to-orange-50/50",
+    accentBorder: "border-orange-200",
+    icon: "🙌"
+  },
+  {
+    title: "Le Soupir Libérateur",
+    instructions: "Bloque ta respiration pendant 2 petites secondes au sommet, étire le bout des doigts, puis laisse retomber tes bras d'un coup sec vers le bas en poussant un très long soupir bruyant par la bouche, en relâchant tout d'un coup.",
+    focus: "Déblocage immédiat du diaphragme & décharge de stress",
+    ambientClass: "from-orange-100/40 to-amber-50/30",
+    accentBorder: "border-orange-200",
+    icon: "💨"
+  },
+  {
+    title: "Rotation des Trapèzes",
+    instructions: "Roule lentement tes épaules vers l'arrière dans un mouvement bien circulaire et régulier. Fais-le trois fois à ton rythme pour libérer les trapèzes et délier les tensions de la nuque.",
+    focus: "Détente musculaire cervicales & trapèzes supérieurs",
+    ambientClass: "from-amber-100/50 to-orange-50/30",
+    accentBorder: "border-amber-200",
+    icon: "🔄"
+  },
+  {
+    title: "Le Roseau Souple",
+    instructions: "Enlace tes doigts au-dessus de ta tête, paumes vers le haut. Penche-toi délicatement vers la gauche en expirant, ressens l'étirement du flanc droit, puis reviens au centre à l'inspiration. Fais de même vers la droite.",
+    focus: "Étirement des muscles intercostaux & respiration latérale",
+    ambientClass: "from-orange-100/50 to-orange-50/40",
+    accentBorder: "border-orange-300/60",
+    icon: "🌾"
+  },
+  {
+    title: "Ouverture du Cœur",
+    instructions: "Place tes mains sur le bas de ton dos, les coudes pointant vers l'arrière. En inspirant, incline doucement le haut de ton torse vers le haut, en rapprochant tes omoplates. Ouvre la poitrine et respire.",
+    focus: "Correction de la posture & ouverture de la cage thoracique",
+    ambientClass: "from-amber-100/60 to-orange-50/50",
+    accentBorder: "border-amber-200",
+    icon: "💖"
+  },
+  {
+    title: "Flexion de l'Ancre",
+    instructions: "Debout ou assis, fléchis doucement le buste vers l'avant. Relâche complètement ta tête, ton cou et tes bras vers le sol. Balance-toi légèrement de gauche à droite, sentant le poids éliminer tes soucis.",
+    focus: "Relâchement de la chaîne postérieure & décompression lombaire",
+    ambientClass: "from-orange-150/50 to-amber-50/40",
+    accentBorder: "border-orange-200",
+    icon: "⚓"
+  },
+  {
+    title: "Étirement du Sphinx",
+    instructions: "Garde le dos bien droit. Tourne lentement la tête vers l'épaule gauche, maintiens 3 secondes, puis tourne vers l'épaule droite. Respire amplement à chaque rotation pour libérer le cou.",
+    focus: "Mobilité cervicale & relâchement des tensions du regard",
+    ambientClass: "from-orange-100/50 to-amber-100/30",
+    accentBorder: "border-orange-150",
+    icon: "🦁"
+  },
+  {
+    title: "Le Chat Somnolent",
+    instructions: "Assis(e) sur ta chaise ou au sol, pose tes mains sur tes genoux. En expirant, arrondis le dos au maximum en rentrant le menton. En inspirant, creuse doucement le haut du dos en bombant le torse.",
+    focus: "Assouplissement de toute la colonne vertébrale",
+    ambientClass: "from-amber-100/40 to-orange-100/40",
+    accentBorder: "border-amber-150",
+    icon: "🐱"
+  },
+  {
+    title: "Détente du Poignet",
+    instructions: "Tends un bras devant toi, paume vers l'avant, doigts vers le bas. Avec ton autre main, tire doucement tes doigts vers toi. Respire calmement en relâchant les crispations accumulées sur le clavier.",
+    focus: "Soulagement des tensions des mains, poignets et canaux",
+    ambientClass: "from-orange-50 to-orange-100/30",
+    accentBorder: "border-orange-100",
+    icon: "✍️"
+  },
+  {
+    title: "Torsion de la Chaise",
+    instructions: "Assis(e), place ta main droite sur ton genou gauche et pivote doucement le buste vers la gauche en regardant derrière toi. Garde le dos grandi. Prends deux respirations complètes, puis change de côté.",
+    focus: "Détoxification de la colonne & relâchement vertébral",
+    ambientClass: "from-amber-50 to-orange-100/40",
+    accentBorder: "border-amber-200",
+    icon: "🪑"
+  },
+  {
+    title: "Le Souffle du Guerrier",
+    instructions: "Ouvre grand les bras en croix sur une grande inspiration. Ferme les poings puis ramène-les sur ton cœur en expirant vigoureusement. Sens la puissance et la chaleur circuler dans tes bras.",
+    focus: "Relance énergétique globale & ancrage corporel",
+    ambientClass: "from-orange-100 to-orange-55",
+    accentBorder: "border-orange-300",
+    icon: "🧘"
+  },
+  {
+    title: "La Pince Douce",
+    instructions: "Allonge les jambes devant toi. Glisse doucement tes mains le long de tes cuisses vers tes chevilles. Pas besoin de toucher tes pieds, apprécie juste l'étirement doux.",
+    focus: "Étirement des muscles fessiers & arrière des cuisses",
+    ambientClass: "from-amber-100/40 to-orange-50",
+    accentBorder: "border-amber-150",
+    icon: "🦵"
+  },
+  {
+    title: "Auto-Massage de la Nuque",
+    instructions: "Pose tes mains fraîches à la base de ta nuque. Exerce de petites pressions fermes et circulaires de chaque côté de la colonne vertébrale en montant vers le crâne. Expire en relâchant tes trapèzes.",
+    focus: "Irrigation sanguine de la tête & libération du stress mental",
+    ambientClass: "from-orange-100/40 to-amber-100/30",
+    accentBorder: "border-orange-200",
+    icon: "💆"
+  },
+  {
+    title: "Le Press-Épaules",
+    instructions: "Amène ton bras droit tendu devant toi puis presse-le contre ta poitrine à l'aide de ton avant-bras gauche. Garde l'épaule droite bien basse. Respire 3 fois puis change de côté.",
+    focus: "Étirement de l'arrière de l'épaule & des deltoïdes",
+    ambientClass: "from-amber-100/50 to-orange-100/30",
+    accentBorder: "border-amber-150",
+    icon: "👐"
+  },
+  {
+    title: "La Fleur de Lotus",
+    instructions: "Joins tes paumes devant la poitrine. En inspirant, ouvre les doigts en gardant la base des mains scellées, comme une fleur qui s'ouvre au soleil. Expire en fermant doucement les boutons de fleur.",
+    focus: "Mobilisation des articulations des doigts & pleine conscience",
+    ambientClass: "from-orange-100/50 to-orange-50/50",
+    accentBorder: "border-orange-200",
+    icon: "🪷"
+  }
+];
+
 export const StretchExercise: React.FC<BaseExerciseProps> = ({
   onComplete,
   onCancel,
 }) => {
   const [stretchStep, setStretchStep] = useState(0);
 
-  const movements = [
-    {
-      num: 1,
-      title: "Élévation Céleste",
-      instructions: "Lève lentement les deux bras vers le ciel en inspirant profondément par le nez. Sens ta colonne vertébrale s'allonger doucement. Grandis-toi au maximum de tes capacités de l'instant, sans forcer.",
-      focus: "Ouverture thoracique & étirement doux",
-      ambientClass: "from-orange-100/60 to-orange-50/50",
-      accentBorder: "border-orange-200",
-      icon: "🙌"
-    },
-    {
-      num: 2,
-      title: "Le Soupir Libérateur",
-      instructions: "Bloque ta respiration pendant 2 petites secondes au sommet, étire le bout des doigts, puis laisse retomber tes bras d'un coup sec vers le bas en poussant un très long soupir bruyant par la bouche, en relâchant tout d'un coup.",
-      focus: "Déblocage immédiat du diaphragme & décharge de stress",
-      ambientClass: "from-orange-100/40 to-amber-50/30",
-      accentBorder: "border-orange-200",
-      icon: "💨"
-    },
-    {
-      num: 3,
-      title: "Rotation des Trapèzes",
-      instructions: "Roule lentement tes épaules vers l'arrière dans un mouvement bien circulaire et régulier. Fais-le trois fois à ton rythme pour libérer les trapèzes et délier les tensions de la nuque.",
-      focus: "Détente musculaire cervicales & trapèzes supérieurs",
-      ambientClass: "from-amber-100/50 to-orange-50/30",
-      accentBorder: "border-amber-200",
-      icon: "🔄"
-    }
-  ];
+  const [movements] = useState(() => {
+    const shuffled = [...ALL_MOVEMENTS].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, 3).map((item, idx) => ({
+      ...item,
+      num: idx + 1
+    }));
+  });
 
   const currentMov = movements[stretchStep];
   const progressPercent = ((stretchStep + 1) / movements.length) * 100;

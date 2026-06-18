@@ -3,56 +3,145 @@ import { motion, AnimatePresence } from "motion/react";
 import { ChevronLeft, ChevronRight, Feather, Sparkles, Accessibility } from "lucide-react";
 import { BaseExerciseProps } from "./BaseExerciseProps";
 
+const ALL_SCAN_PARTS = [
+  { 
+    part: "Le sommet du crâne & le front", 
+    instruction: "Relâche les sourcils, laisse tes yeux flotter librement en fermant doucement les paupières. Sens le crâne se détendre.",
+    ambientClass: "from-indigo-100/60 to-indigo-50/50",
+    accentBorder: "border-indigo-200",
+    zone: "Tête & Esprit"
+  },
+  { 
+    part: "La mâchoire & le visage", 
+    instruction: "Desserre les dents, laisse la langue se reposer loin du palais. Expire longuement par les lèvres détendues.",
+    ambientClass: "from-indigo-100/50 to-purple-100/40",
+    accentBorder: "border-purple-200/80",
+    zone: "Visage"
+  },
+  { 
+    part: "Les épaules & le cou", 
+    instruction: "Laisse tes épaules s'abaisser naturellement. Imagine qu'elles fondent vers le sol lors de l'expiration paisible.",
+    ambientClass: "from-purple-100/50 to-indigo-100/30",
+    accentBorder: "border-purple-200/70",
+    zone: "Tronc supérieur"
+  },
+  { 
+    part: "La poitrine & le cœur", 
+    instruction: "Sens la poitrine s'ouvrir calmement à l'inspiration, et s'apaiser à l'expiration. Respire au rythme du battement.",
+    ambientClass: "from-indigo-100/60 to-purple-100/30",
+    accentBorder: "border-indigo-200",
+    zone: "Cœur & Poumons"
+  },
+  { 
+    part: "L'abdomen & le ventre", 
+    instruction: "Laisse ton ventre se gonfler sans contrainte à l'inspiration naturelle. Souffle avec une lenteur purificatrice.",
+    ambientClass: "from-indigo-100/55 to-indigo-50/55",
+    accentBorder: "border-indigo-200/80",
+    zone: "Diaphragme & Digestion"
+  },
+  { 
+    part: "Les jambes & les pieds", 
+    instruction: "Ressens le contact lourd de tes talons contre le sol solide. Tu es pleinement ancré, en parfaite sécurité.",
+    ambientClass: "from-indigo-100/65 to-indigo-50/50",
+    accentBorder: "border-indigo-200",
+    zone: "Enracinement"
+  },
+  { 
+    part: "Les yeux & les tempes", 
+    instruction: "Relâche les micro-muscles du contour des yeux. Visualise une chaleur douce se diffuser sur tes tempes fatiguées par les écrans.",
+    ambientClass: "from-purple-100/60 to-indigo-50/50",
+    accentBorder: "border-indigo-200/60",
+    zone: "Regard & mental"
+  },
+  { 
+    part: "Les oreilles & la nuque", 
+    instruction: "Sois à l'écoute des sons lointains sans chercher à les analyser. Sens la base du crâne s'ouvrir et s'alléger.",
+    ambientClass: "from-indigo-100/50 to-indigo-50/60",
+    accentBorder: "border-purple-200/50",
+    zone: "Audition & Port de tête"
+  },
+  { 
+    part: "Le haut du dos & les omoplates", 
+    instruction: "Imagine qu'un espace spacieux se crée entre tes deux omoplates. Laisse aller le poids invisible du stress quotidien.",
+    ambientClass: "from-purple-100/70 to-indigo-100/40",
+    accentBorder: "border-purple-300/50",
+    zone: "Posture & Résilience"
+  },
+  { 
+    part: "Le milieu & bas du dos", 
+    instruction: "Sens le contact du siège ou du matelas soutenir fermement tes reins. Laisse s'envoler les raideurs lombaires.",
+    ambientClass: "from-indigo-100/50 to-indigo-50/55",
+    accentBorder: "border-indigo-200/70",
+    zone: "Soutien lombaire"
+  },
+  { 
+    part: "Les bras & les coudes", 
+    instruction: "Sens l'énergie couler le long de tes bras, des biceps jusqu'aux coudes. Tes bras sont lourds et détendus au repos.",
+    ambientClass: "from-purple-50 to-indigo-100/40",
+    accentBorder: "border-indigo-150",
+    zone: "Membres supérieurs"
+  },
+  { 
+    part: "Les poignets & les mains", 
+    instruction: "Baigne ton attention dans la paume de tes mains. Sens les vibrations ou la chaleur s'accumuler au bout de chaque doigt.",
+    ambientClass: "from-indigo-100/40 to-indigo-50/35",
+    accentBorder: "border-indigo-150",
+    zone: "Force & Création"
+  },
+  { 
+    part: "Le bassin & les hanches", 
+    instruction: "Respire profondément au centre de ton bassin. Relâche les tensions profondes logées au confluent de tes membres.",
+    ambientClass: "from-purple-100/45 to-purple-50/45",
+    accentBorder: "border-purple-200",
+    zone: "Stabilité centrale"
+  },
+  { 
+    part: "Les cuisses", 
+    instruction: "Lâche l'engagement des grands muscles fléchisseurs. Laisse tes cuisses s'étaler sur ton assise, douces et relâchées.",
+    ambientClass: "from-indigo-100/50 to-indigo-50/50",
+    accentBorder: "border-indigo-200",
+    zone: "Grande mobilité"
+  },
+  { 
+    part: "Les genoux", 
+    instruction: "Porte une attention douce sur l'articulation de tes deux genoux. Remercie-les d'absorber tes pas et tes courses.",
+    ambientClass: "from-purple-100/40 to-indigo-50/40",
+    accentBorder: "border-purple-150",
+    zone: "Flexibilité libre"
+  },
+  { 
+    part: "Les mollets & chevilles", 
+    instruction: "Ressens tes mollets totalement libres de toute velléité de départ ou de tension. Tes chevilles sont souples et en paix.",
+    ambientClass: "from-indigo-150/40 to-indigo-50/40",
+    accentBorder: "border-indigo-200",
+    zone: "Légèreté & marche"
+  },
+  { 
+    part: "La plante des pieds", 
+    instruction: "Sens la peau fine sous tes pieds. C'est l'interface de ton corps avec le monde physique. Accueille cette sensation d'enracinement.",
+    ambientClass: "from-indigo-100/65 to-purple-50/55",
+    accentBorder: "border-indigo-250/60",
+    zone: "Connexion Terre"
+  },
+  { 
+    part: "Le corps tout entier", 
+    instruction: "Prends une inspire globale : sens tout ton corps vibrer de la tête aux pieds, unifié dans le calme et la quiétude absolue.",
+    ambientClass: "from-indigo-200/45 to-purple-100/40",
+    accentBorder: "border-indigo-300",
+    zone: "Unité & Sagesse"
+  }
+];
+
 export const ScanCorporelExercise: React.FC<BaseExerciseProps> = ({
   onComplete,
   onCancel,
 }) => {
   const [scanStep, setScanStep] = useState(0);
 
-  const scanParts = [
-    { 
-      part: "Le sommet du crâne & le front", 
-      instruction: "Relâche les sourcils, laisse tes yeux flotter librement en fermant doucement les paupières. Sens le crâne se détendre.",
-      ambientClass: "from-indigo-100/60 to-indigo-50/50",
-      accentBorder: "border-indigo-200",
-      zone: "Tête & Esprit"
-    },
-    { 
-      part: "La mâchoire & le visage", 
-      instruction: "Desserre les dents, laisse la langue se reposer loin du palais. Expire longuement par les lèvres détendues.",
-      ambientClass: "from-indigo-100/50 to-purple-100/40",
-      accentBorder: "border-purple-200/80",
-      zone: "Visage"
-    },
-    { 
-      part: "Les épaules & le cou", 
-      instruction: "Laisse tes épaules s'abaisser naturellement. Imagine qu'elles fondent vers le sol lors de l'expiration paisible.",
-      ambientClass: "from-purple-100/50 to-indigo-100/30",
-      accentBorder: "border-purple-200/70",
-      zone: "Tronc supérieur"
-    },
-    { 
-      part: "La poitrine & le cœur", 
-      instruction: "Sens la poitrine s'ouvrir calmement à l'inspiration, et s'apaiser à l'expiration. Respire au rythme du battement.",
-      ambientClass: "from-indigo-100/60 to-purple-100/30",
-      accentBorder: "border-indigo-200",
-      zone: "Cœur & Poumons"
-    },
-    { 
-      part: "L'abdomen & le ventre", 
-      instruction: "Laisse ton ventre se gonfler sans contrainte à l'inspiration naturelle. Souffle avec une lenteur purificatrice.",
-      ambientClass: "from-indigo-100/55 to-indigo-50/55",
-      accentBorder: "border-indigo-200/80",
-      zone: "Diaphragme & Digestion"
-    },
-    { 
-      part: "Les jambes & les pieds", 
-      instruction: "Ressens le contact lourd de tes talons contre le sol solide. Tu es pleinement ancré, en parfaite sécurité.",
-      ambientClass: "from-indigo-100/65 to-indigo-50/50",
-      accentBorder: "border-indigo-200",
-      zone: "Enracinement"
-    },
-  ];
+  const [scanParts] = useState(() => {
+    const shuffled = [...ALL_SCAN_PARTS].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, 6);
+  });
 
   const currentPart = scanParts[scanStep];
   const progressPercent = ((scanStep + 1) / scanParts.length) * 100;

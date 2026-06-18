@@ -3,21 +3,69 @@ import { motion, AnimatePresence } from "motion/react";
 import { ChevronLeft, Sparkles, Heart, RefreshCw, CheckCircle2 } from "lucide-react";
 import { BaseExerciseProps } from "./BaseExerciseProps";
 
+const ALL_AFFIRMATIONS = [
+  "Je fais de mon mieux, et cela est amplement suffisant aujourd'hui.",
+  "Je m'accorde le droit de ralentir et de prendre soin de mon esprit.",
+  "Mes émotions sont bienvenues, elles traversent juste mon ciel intérieur.",
+  "Chaque respiration douce ramène un peu de calme et de sécurité en moi.",
+  "Je suis digne de douceur, de confiance et de bienveillance.",
+  "Je libère les attentes des autres pour retrouver mon propre rythme.",
+  "Je m'autorise à dire non pour préserver mon énergie et ma paix.",
+  "Mon passé ne définit pas l'instant présent ; ici et maintenant, je peux respirer.",
+  "J'apprends à m'écouter et à respecter les limites de mon corps.",
+  "Je suis capable de traverser les tempêtes avec patience et force.",
+  "La paix commence en moi à chaque fois que je décide de relâcher mes épaules.",
+  "Je sème des pensées douces pour récolter un quotidien plus serein.",
+  "Mon esprit mérite du repos, ma valeur ne dépend pas de ma productivité.",
+  "Je choisis de focaliser mon attention sur ce que je peux contrôler aujourd'hui.",
+  "Chaque pas, aussi petit soit-il, me rapproche d'un équilibre intérieur.",
+  "Je m'accueille tel(le) que je suis, avec mes forces et mes vulnérabilités.",
+  "L'incertitude est une opportunité pour apprendre à me faire confiance.",
+  "Je suis l'ancre de mon propre navire face aux agitations extérieures.",
+  "Je choisis la bienveillance envers moi-même à la place du jugement.",
+  "Ma respiration est un refuge toujours accessible, où que je sois.",
+  "Je mérite de prendre du temps pour respirer, guérir et grandir.",
+  "Chaque jour est une nouvelle chance d'être plus doux avec moi-même.",
+  "Je libère le besoin d'être parfait(e) pour embrasser ma sincérité.",
+  "Mon calme intérieur est un cadeau que je peux offrir au monde.",
+  "Je suis fort(e), courageux(se) et capable de surmonter ce défi.",
+  "La confiance en moi grandit à chaque décision prise avec le cœur.",
+  "Je choisis d'honorer mon parcours et de célébrer mes victoires silencieuses.",
+  "Mes pensées ne sont pas des faits tangibles ; je peux choisir de les laisser filer.",
+  "Je m'entoure de lumière, d'espoir et d'ondes positives aujourd'hui.",
+  "Je choisis d'être mon/ma meilleur(e) ami(e) dans les moments de doute.",
+  "L'instant présent est un espace de sécurité où tout va bien.",
+  "Mon intuition est un guide précieux que j'apprends à écouter pas à pas.",
+  "Je suis en sécurité ici, mon corps sait comment retrouver son équilibre calme.",
+  "Chaque inspire m'apporte de la force, chaque expire libère mes tracas.",
+  "Je me pardonne mes erreurs passées, j'avance plus léger(e) et plus sage.",
+  "Mon existence est précieuse et ma présence apporte de la valeur aux autres.",
+  "La douceur est une force que je choisis d'incarnner aujourd'hui.",
+  "Je laisse de côté ce qui ne m'appartient plus pour faire de la place au renouveau.",
+  "Mes efforts quotidiens portent leurs fruits à leur propre rythme.",
+  "Je suis connecté(e) à ma force tranquille intérieure, inébranlable.",
+  "J'accepte le flux naturel de la vie sans chercher à tout contrôler.",
+  "Mon cœur est ouvert à la joie simple d'un rayon de soleil ou d'un sourire.",
+  "Je suis capable d'accueillir chaque événement avec calme et recul.",
+  "Ma santé mentale est ma priorité absolue, et c'est un choix courageux.",
+  "Je ralentis mes mouvements pour savourer la beauté discrète de l'instant.",
+  "Je ne suis pas mes soucis ; je suis la conscience bienveillante qui observe.",
+  "Mes besoins sont légitimes et importants, je n'hésite pas à les exprimer.",
+  "Je choisis de me libérer de la culpabilité pour privilégier l'auto-compassion.",
+  "Le calme s'installe profondément en moi à chaque cycle de respiration.",
+  "Je suis prêt(e) à accueillir le meilleur de cette journée avec confiance."
+];
+
 export const AffirmationsExercise: React.FC<BaseExerciseProps> = ({
   onComplete,
   onCancel,
 }) => {
+  const [affirmationsList] = useState<string[]>(() => {
+    const shuffled = [...ALL_AFFIRMATIONS].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, 6);
+  });
   const [affirmIndex, setAffirmIndex] = useState(0);
   const [favorites, setFavorites] = useState<number[]>([]);
-
-  const affirmationsList = [
-    "Je fais de mon mieux, et cela est amplement suffisant aujourd'hui.",
-    "Je m'accorde le droit de ralentir et de prendre soin de mon esprit.",
-    "Mes émotions sont bienvenues, elles traversent juste mon ciel intérieur.",
-    "Chaque respiration douce ramène un peu de calme et de sécurité en moi.",
-    "Je suis digne de douceur, de confiance et de bienveillance.",
-    "Je libère les attentes des autres pour retrouver mon propre rythme.",
-  ];
 
   const nextAffirmation = () => {
     setAffirmIndex((idx) => (idx + 1) % affirmationsList.length);
