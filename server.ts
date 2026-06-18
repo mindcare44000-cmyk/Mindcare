@@ -97,38 +97,119 @@ function generateLocalFallbackResponse(prompt: string, sInst?: string): string {
   return "Je t'écoute avec toute mon attention et ma bienveillance. Chaque pensée que tu traverses mérite d'être accueillie avec respect. Veux-tu me partager ce que tu ressens, ou préfères-tu essayer un petit exercice guidé ?";
 }
 
+const MINDY_CHATBOT_INSTRUCTION = `IDENTITÉ :
+Tu es Mindy, un compagnon de bien-être mental chaleureux, doux et profondément empathique.
+Ton objectif est d'offrir un espace de parole sécurisant et non-jugeant.
+DIRECTIVES DE COMMUNICATION :
+1. TUTOIEMENT : Utilise TOUJOURS le "tu". C'est essentiel pour la proximité.
+2. TON : Chaleureux, validant, apaisant. Ne sois pas trop formel ni trop clinique.
+3. STRUCTURE : Fais des réponses relativement courtes pour favoriser l'échange.
+4. MISE EN FORME : Uniquement du texte brut. INTERDICTION d'utiliser du gras (**), de l'italique (*) ou des listes à puces complexes.
+CADRE ÉTHIQUE ET SÉCURITÉ :
+- PAS DE DIAGNOSTIC : Tu ne peux pas dire "Tu es dépressif" ou "C'est de l'anxiété généralisée". Préfère : "Ce que tu décris ressemble à un moment de grand stress".
+- PAS DE MÉDICAMENTS : Ne conseille jamais de traitement. Renvoie vers un médecin.
+- SITUATIONS SENSIBLES ET RÉPÉTITION DES RESSOURCES :
+ * PREMIÈRE FOIS dans la session : Message complet (empathie, proposition claire d'appeler, numéro concerné, proposition d'aide pour préparer l'appel).
+ * DEUXIÈME FOIS dans la session : Version abrégée (rappel court du numéro, mention rapide de l'aide à la préparation, ton plus synthétique).
+ * À PARTIR DE LA TROISIÈME FOIS : Si le risque critique est toujours détecté, rappeler les ressources d’aide de manière courte, sans insister inutilement, et maintenir l’orientation vers une aide humaine.
+ACTIONS SPÉCIALES (BALISES D'EXERCICES) :
+Si tu juges qu'un exercice peut aider l'utilisateur, insère UNE SEULE des balises suivantes à la toute fin de ton message :
+
+1. CRISE D'ANGOISSE / PANIQUE / STRESS AIGU (Choisir l'un des trois) :
+ - [ACTION:EXERCISE:COHERENCE] (Respiration rythmée)
+ - [ACTION:EXERCISE:ANCRAGE] (Focus sur les sens)
+ - [ACTION:EXERCISE:RESPIRATION_CARREE] (Stabilisation)
+2. BESOIN DE DÉTENTE / RELÂCHEMENT PHYSIQUE :
+ - [ACTION:EXERCISE:SCAN_CORPOREL]
+3. MORAL BAS / BESOIN DE POSITIVITÉ (Choisir l'un des trois) :
+ - [ACTION:EXERCISE:AFFIRMATIONS]
+ - [ACTION:EXERCISE:GRATITUDE]
+ - [ACTION:EXERCISE:MEDITATION_NUAGE]
+4. BESOIN DE DÉCHARGE ÉMOTIONNELLE / VIDER SON SAC :
+ - [ACTION:EXERCISE:VIDER_SAC]
+RÈGLES CRUCIALES POUR LES BALISES :
+- INTERDICTION ABSOLUE de décrire l'exercice ou de donner des instructions techniques dans ton texte.
+- Mentionne juste très brièvement qu'un exercice spécifique peut aider.
+- Une seule balise par réponse, placée tout à la fin.
+- Tu ne peux propose un exercice qu'une seule fois par session.
+MÉTHODE D'ACCOMPAGNEMENT :
+Si tu orientes vers un professionnel (ex: Alcool Info Service), propose toujours de "préparer l'appel ensemble" ou de simuler le début de la conversation pour réduire l'appréhension de l'utilisateur.`;
+
+const MINDY_CHECKIN_INSTRUCTION = "Tu es Mindy, le compagnon IA de MindCare. Tu émanes d'un soutien bienveillant, doux et apaisant. Tu n'utilises aucun terme clinique (pas de diagnostic, pas de trouble détecté). Tu t'adresses d'égal à égal avec l'utilisateur en le tutoyant sincèrement en français, dans un style zen, très concis.";
+
   // Secure Server-side Gemini endpoint
   app.post("/api/gemini/generate", async (req, res) => {
-    const { prompt, systemInstruction } = req.body;
+    const { prompt, type, systemInstruction } = req.body;
     
     if (!prompt) {
       res.status(400).json({ error: "Missing prompt parameter." });
       return;
     }
 
+    // Resolve system prompt securely on the server
+    let resolvedInstruction = MINDY_CHATBOT_INSTRUCTION;
+    if (type === "checkin") {
+      resolvedInstruction = MINDY_CHECKIN_INSTRUCTION;
+    } else if (type === "chatbot") {
+      resolvedInstruction = MINDY_CHATBOT_INSTRUCTION;
+    } else {
+      // Graceful local fallbacks for potential custom frontends: check clues
+      const promptText = String(prompt || "").toLowerCase();
+      const instText = String(systemInstruction || "").toLowerCase();
+      if (promptText.includes("bilan") || promptText.includes("humeur globale") || promptText.includes("niveau de pression") || instText.includes("bilan émo") || instText.includes("humeur")) {
+        resolvedInstruction = MINDY_CHECKIN_INSTRUCTION;
+      }
+    }
+
     try {
       const client = getGeminiClient();
       if (!client) {
-        const simulationResponse = generateLocalFallbackResponse(prompt, systemInstruction);
+        const simulationResponse = generateLocalFallbackResponse(prompt, resolvedInstruction);
         res.json({ text: simulationResponse, simulated: true });
         return;
       }
 
-      const response = await client.models.generateContent({
-        model: "gemini-3.5-flash",
-        contents: prompt,
-        config: {
-          systemInstruction: systemInstruction || "Tu es Mindy, le compagnon IA de MindCare. Tu es douce, calme, bienveillante et rassurante. Tu ne poses aucun diagnostic médical, ne donnes pas de traitement et n'utilises aucun terme clinique lourd. Tu t'exprimes avec simplicité et empathie, en tutoyant doucement l'utilisateur.",
-          temperature: 0.7,
-        },
-      });
+      // Safe progressive retry block to counter transient high-load 503 limits dynamically
+      let response = null;
+      let lastError = null;
+      let delay = 350;
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        try {
+          response = await client.models.generateContent({
+            model: "gemini-3.5-flash",
+            contents: prompt,
+            config: {
+              systemInstruction: resolvedInstruction,
+              temperature: 0.7,
+            },
+          });
+          break; // successfully generated!
+        } catch (err: any) {
+          lastError = err;
+          const errMsg = String(err?.message || "");
+          const isTransient = errMsg.includes("503") || errMsg.includes("UNAVAILABLE") || errMsg.includes("demand") || err?.status === 503 || err?.status === 429;
+          
+          if (isTransient && attempt < 3) {
+            console.log(`[Mindy API] Gemini high demand 503 detected (attempt ${attempt}/3). Retrying in ${delay}ms...`);
+            await new Promise((resolve) => setTimeout(resolve, delay));
+            delay *= 2;
+            continue;
+          }
+          break;
+        }
+      }
 
-      res.json({ text: response.text });
+      if (response && response.text) {
+        res.json({ text: response.text });
+      } else {
+        throw lastError || new Error("Failed to get response text.");
+      }
     } catch (error: any) {
-      console.warn("Gemini API Error (Triggering Local Companion Fallback):", error);
+      // Logging the activation of integrated backup core without dumping raw alert-triggering console stacks
+      console.log(`[Mindy API] Switching to integrated backup core (guided fallback active, system status: ${error?.message || error})`);
       
       // Fall back seamlessly to our locally simulated responsive engine
-      const fallbackResponse = generateLocalFallbackResponse(prompt, systemInstruction);
+      const fallbackResponse = generateLocalFallbackResponse(prompt, resolvedInstruction);
       res.json({ 
         text: fallbackResponse, 
         simulated: true,

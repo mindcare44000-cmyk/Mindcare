@@ -129,14 +129,11 @@ export default function CheckIn({ setPath, userProfile, addCheckIn }: CheckInPro
 
 Rédige un court message (maximum 3 phrases en français), extrêmement bienveillant, doux et apaisant. Ne pose AUCUN diagnostic, ne propose aucun traitement, et n'utilise pas de jargon clinique. Invite à souffler et propose un conseil simple ou une activité appropriée pour l'accompagner avec tact.`;
 
-    const systemInstruction = 
-      "Tu es Mindy, le compagnon IA de MindCare. Tu es une voix douce de soutien, calme et rassurante. Tu n'utilises aucun terme clinique lourd (pas de diagnostic, pas de trouble détecté). Tu t'adresses d'égal à égal avec l'utilisateur en le tutoyant sincèrement en français, dans un style zen, très concis.";
-
     try {
       const res = await fetch("/api/gemini/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt: promptText, systemInstruction }),
+        body: JSON.stringify({ prompt: promptText, type: "checkin" }),
       });
       const data = await res.json();
       const textResult = data?.text || "Prends une grande inspiration. Ce moment que tu t'accordes est déjà un acte magnifique d'auto-bienveillance. Écoute tes ressentis avec indulgence aujourd'hui.";

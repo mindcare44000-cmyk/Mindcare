@@ -258,6 +258,7 @@ Si une fonctionnalité n'a pas de tests, elle ne doit pas être considérée com
 1. Appel API Chiffré : La soumission interroge la route serveur `/api/gemini/generate` de façon confidentielle sans exposer de clé.
 2. Rendu de la météo : Le message d'analyse douce rédigé par Mindy s'affiche dans un cadre aux teintes lavande dégradées.
 3. Absence de diagnostic : Le texte généré par l'IA ou sa simulation ne mentionne aucun terme clinique ou diagnostic médical de dépression ou d'anxiété.
+4. Isolation du prompt système : L'appel d'API n'accepte plus d'instruction système personnalisée venant du client, le serveur applique de manière étanche sa propre constante "checkin".
 
 ---
 
@@ -276,6 +277,9 @@ Si une fonctionnalité n'a pas de tests, elle ne doit pas être considérée com
 1. Initier un échange : Cliquer sur un déclencheur rapide comme "Je me sens stressé aujourd'hui" envoie le message et génère une bulle utilisateur.
 2. Écoute bienveillante de Mindy : Mindy répond sous 2 secondes avec un ton doux et chaleureux, sans jargon médical.
 3. Recommandation unique d'exercice : Mindy ne propose qu'un seul exercice d'apaisement à la fois pour éviter de submerger l'utilisateur.
+
+### 3. Isolation du prompt d'identité (Sécurité)
+1. Résilience de l'identité : L'appel d'API n'accepte plus d'instruction système venant de requêtes clientes mais force l'usage de la constante hermétique serveur, empêchant tout détournement de l'identité de Mindy.
 
 ### 2. Détection d'Expressions Sensibles
 1. Alerte de détresse : La présence de mots-clés de crise majeurs déclenche l'affichage immédiat d'une bulle système rouge vif.
