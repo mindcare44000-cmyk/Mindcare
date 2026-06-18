@@ -27,7 +27,7 @@ L'IA doit utiliser ce fichier pour :
 * éviter les régressions ;
 * organiser les tests par page ;
 * préciser les critères de réussite de chaque test.
-
+ 
 L'IA ne doit pas considérer une fonctionnalité comme terminée si aucun test n'a été ajouté pour celle-ci.
 
 ---

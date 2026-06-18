@@ -36,7 +36,7 @@ export const JournalSosExercise: React.FC<BaseExerciseProps> = ({
 
         <span className="text-xs font-extrabold tracking-widest uppercase text-violet-800 flex items-center space-x-1">
           <Lock className="w-3.5 h-3.5" />
-          <span>Journal SOS Chiffré</span>
+          <span>Journal SOS</span>
         </span>
 
         <span className="text-[10px] text-emerald-700 font-extrabold bg-emerald-50 border border-emerald-155 px-2.5 py-1 rounded-full uppercase tracking-widest flex items-center space-x-1 shadow-xs">

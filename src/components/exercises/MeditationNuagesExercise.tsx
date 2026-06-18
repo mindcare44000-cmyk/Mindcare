@@ -62,7 +62,7 @@ export const MeditationNuagesExercise: React.FC<BaseExerciseProps> = ({
         </button>
 
         <span className="text-xs font-extrabold tracking-widest uppercase text-teal-800">
-          Visualisation des Nuages
+          Méditation des Nuages
         </span>
 
         <div className="w-8" />
