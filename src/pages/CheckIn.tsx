@@ -10,11 +10,11 @@ interface CheckInProps {
 }
 
 const MOODS = [
-  { val: 5, label: "Super", emoji: "😄" },
-  { val: 4, label: "Bien", emoji: "🙂" },
-  { val: 3, label: "Moyen", emoji: "😐" },
-  { val: 2, label: "Pas top", emoji: "😔" },
-  { val: 1, label: "Mal", emoji: "😞" },
+  { val: 5, label: "Soleil", emoji: "☀️" },
+  { val: 4, label: "Éclaircie", emoji: "⛅" },
+  { val: 3, label: "Nuageux", emoji: "☁️" },
+  { val: 2, label: "Pluie", emoji: "🌧️" },
+  { val: 1, label: "Orage", emoji: "⛈️" },
 ];
 
 const DEFAULT_TAGS = [

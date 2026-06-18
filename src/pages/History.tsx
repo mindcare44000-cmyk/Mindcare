@@ -54,8 +54,8 @@ const HISTORICAL_DATABASE: HistoricDay[] = [
     weekdayFull: "Jeudi",
     frenchDisplayDate: "Jeudi 7 juin",
     mood: 3,
-    moodLabel: "Humeur correcte",
-    moodEmoji: "😐",
+    moodLabel: "Nuageux",
+    moodEmoji: "☁️",
     pressure: "Modéré",
     pressureLevel: 42,
     energy: "Correcte",
@@ -75,8 +75,8 @@ const HISTORICAL_DATABASE: HistoricDay[] = [
     weekdayFull: "Mercredi",
     frenchDisplayDate: "Mercredi 6 juin",
     mood: 4,
-    moodLabel: "Bonne journée",
-    moodEmoji: "🙂",
+    moodLabel: "Éclaircie",
+    moodEmoji: "⛅",
     pressure: "Modérée",
     pressureLevel: 35,
     energy: "Modérée",
@@ -95,8 +95,8 @@ const HISTORICAL_DATABASE: HistoricDay[] = [
     weekdayFull: "Mardi",
     frenchDisplayDate: "Mardi 5 juin",
     mood: 4,
-    moodLabel: "Bonne journée",
-    moodEmoji: "🙂",
+    moodLabel: "Éclaircie",
+    moodEmoji: "⛅",
     pressure: "Faible",
     pressureLevel: 20,
     energy: "Modérée",
@@ -115,8 +115,8 @@ const HISTORICAL_DATABASE: HistoricDay[] = [
     weekdayFull: "Lundi",
     frenchDisplayDate: "Lundi 4 juin",
     mood: 4,
-    moodLabel: "Bonne journée",
-    moodEmoji: "🙂",
+    moodLabel: "Éclaircie",
+    moodEmoji: "⛅",
     pressure: "Modérée",
     pressureLevel: 45,
     energy: "Modérée",
@@ -135,8 +135,8 @@ const HISTORICAL_DATABASE: HistoricDay[] = [
     weekdayFull: "Dimanche",
     frenchDisplayDate: "Dimanche 3 juin",
     mood: 2,
-    moodLabel: "Journée fragile",
-    moodEmoji: "🥺",
+    moodLabel: "Pluie",
+    moodEmoji: "🌧️",
     pressure: "Élevée",
     pressureLevel: 80,
     energy: "Basse",
@@ -155,8 +155,8 @@ const HISTORICAL_DATABASE: HistoricDay[] = [
     weekdayFull: "Samedi",
     frenchDisplayDate: "Samedi 2 juin",
     mood: 3,
-    moodLabel: "Humeur correcte",
-    moodEmoji: "😐",
+    moodLabel: "Nuageux",
+    moodEmoji: "☁️",
     pressure: "Faible",
     pressureLevel: 15,
     energy: "Correcte",
@@ -175,8 +175,8 @@ const HISTORICAL_DATABASE: HistoricDay[] = [
     weekdayFull: "Vendredi",
     frenchDisplayDate: "Vendredi 1 juin",
     mood: 5,
-    moodLabel: "Excellente journée",
-    moodEmoji: "✨",
+    moodLabel: "Soleil",
+    moodEmoji: "☀️",
     pressure: "Faible",
     pressureLevel: 10,
     energy: "Excellente",
@@ -218,23 +218,23 @@ export default function History({ currentPath, setPath, userProfile, checkIns }:
       const moodValue = c.mood;
 
       // Map checkIn properties to our rich HistoricDay structure
-      let moodLabel = "Humeur correcte";
-      let moodEmoji = "😐";
+      let moodLabel = "Nuageux";
+      let moodEmoji = "☁️";
       if (moodValue >= 5) {
-        moodLabel = "Excellente journée";
-        moodEmoji = "✨";
+        moodLabel = "Soleil";
+        moodEmoji = "☀️";
       } else if (moodValue === 4) {
-        moodLabel = "Bonne journée";
-        moodEmoji = "🙂";
+        moodLabel = "Éclaircie";
+        moodEmoji = "⛅";
       } else if (moodValue === 3) {
-        moodLabel = "Humeur correcte";
-        moodEmoji = "😐";
+        moodLabel = "Nuageux";
+        moodEmoji = "☁️";
       } else if (moodValue === 2) {
-        moodLabel = "Journée fragile";
-        moodEmoji = "🥺";
+        moodLabel = "Pluie";
+        moodEmoji = "🌧️";
       } else {
-        moodLabel = "Journée difficile";
-        moodEmoji = "😞";
+        moodLabel = "Orage";
+        moodEmoji = "⛈️";
       }
 
       // Check if duplicate entry exists (e.g. today refreshed) and update or add
@@ -357,10 +357,11 @@ export default function History({ currentPath, setPath, userProfile, checkIns }:
   };
 
   const getMoodEmojiLabel = (mood: number) => {
-    if (mood >= 5) return "Excellent";
-    if (mood === 4) return "Bien";
-    if (mood === 3) return "Moyen";
-    return "Difficile";
+    if (mood >= 5) return "Soleil";
+    if (mood === 4) return "Éclaircie";
+    if (mood === 3) return "Nuageux";
+    if (mood === 2) return "Pluie";
+    return "Orage";
   };
 
   // Navigate back to Calendar

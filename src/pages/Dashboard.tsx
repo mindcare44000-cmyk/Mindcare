@@ -42,11 +42,11 @@ export default function Dashboard({ setPath, userProfile, checkIns }: DashboardP
   const trendHistory = combinedRecords.slice(-5);
 
   const getMoodEmoji = (moodValue: number) => {
-    if (moodValue <= 1) return "😞";
-    if (moodValue === 2) return "🥺";
-    if (moodValue === 3) return "😐";
-    if (moodValue === 4) return "🙂";
-    return "💡";
+    if (moodValue <= 1) return "⛈️";
+    if (moodValue === 2) return "🌧️";
+    if (moodValue === 3) return "☁️";
+    if (moodValue === 4) return "⛅";
+    return "☀️";
   };
 
   // Active user mood representation
@@ -298,7 +298,7 @@ export default function Dashboard({ setPath, userProfile, checkIns }: DashboardP
         <div className="bg-white border border-zinc-200/50 rounded-3xl p-4 shadow-sm" id="badges-card">
           <h4 className="text-[11px] font-bold text-zinc-800 select-none tracking-tight flex items-center space-x-1.5" id="badges-header">
             <i className="ti ti-crown text-base text-[#7C6FF7]"></i>
-            <span>Insignes d'accompagnement</span>
+            <span>Accomplissement</span>
           </h4>
 
           <div className="space-y-2.5 mt-3.5" id="badges-rows">

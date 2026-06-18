@@ -44,11 +44,11 @@ const QUESTIONS: Question[] = [
     subtitle: "Quelques secondes pour commencer",
     type: "single",
     options: [
-      { label: "😐 Plutôt bien", value: "Plutôt bien" },
-      { label: "😊 Je me sens bien", value: "Je me sens bien" },
-      { label: "😐 Ça va, sans plus", value: "Ça va, sans plus" },
-      { label: "😔 Plutôt fatigué(e) / à plat", value: "Plutôt fatigué(e) / à plat" },
-      { label: "😔 Pas bien du tout", value: "Pas bien du tout" },
+      { label: "☀️ Plutôt bien", value: "Plutôt bien" },
+      { label: "⛅ Je me sens bien", value: "Je me sens bien" },
+      { label: "☁️ Ça va, sans plus", value: "Ça va, sans plus" },
+      { label: "🌧️ Plutôt fatigué(e) / à plat", value: "Plutôt fatigué(e) / à plat" },
+      { label: "⛈️ Pas bien du tout", value: "Pas bien du tout" },
     ],
   },
   {
