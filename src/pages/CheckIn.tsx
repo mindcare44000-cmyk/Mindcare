@@ -355,7 +355,7 @@ Rédige un court message (maximum 3 phrases en français), extrêmement bienveil
                       onChange={(e) => setEnergyVal(Number(e.target.value))}
                       className="w-full h-2 rounded-full appearance-none cursor-pointer outline-none transition-all duration-150"
                       style={{
-                        background: "linear-gradient(to right, #5B4FD4, #EDE9FE)",
+                        background: "linear-gradient(to right, #EDE9FE, #5B4FD4)",
                       }}
                     />
                   </div>
