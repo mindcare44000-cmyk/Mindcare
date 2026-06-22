@@ -194,15 +194,29 @@ export default function Chatbot({ setPath, userProfile }: ChatbotProps) {
     setLoading(true);
 
     // Safety checks / Trigger SOS redirect warning if trigger words are detected
-    const sensitiveWords = ["suicide", "mourir", "finir ma vie", "crise de panique intense", "urgence", "3114"];
-    const hasSensitive = sensitiveWords.some((word) => textToSend.toLowerCase().includes(word));
+    const cleanText = textToSend.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // strip accents to uniformize
+    const sensitiveWords = [
+      "suicide", "suicid", "sucide", "sucider", "sucid", "me tuer", "se tuer",
+      "mourir", "mort", "mors", "veux crever", "vie de merde", "envie de crever",
+      "en finir", "finir ma vie", "terminer ma vie", "fin a mes jours", "oter la vie", "m'oter la vie", "m'ôter la vie",
+      "mutiler", "auto-mutil", "couper les veines", "veines", "tailler les veines",
+      "me pendre", "se pendre", "pendaison", "overdose", "defenestrer", "sauter de", "sauter par la",
+      "plus envie de vivre", "marre de vivre", "perdu le gout de vivre", "pas envie de vivre",
+      "panique intense", "crise d'angoisse", "detresse", "urgences", "secours", "3114", "15"
+    ];
+    const hasSensitive = sensitiveWords.some((word) => cleanText.includes(word));
 
     if (hasSensitive) {
       setTimeout(() => {
         const sosMsg: ChatMessage = {
           id: Math.random().toString(36).substring(7),
           sender: "system",
-          text: "Je ressens une très vive détresse dans tes mots. Nous prenons cela très au sérieux. Sache que Mindy ne remplace pas une aide professionnelle. Je t'invite à contacter immédiatement les secours (15) ou le numéro national de prévention du suicide (3114, gratuit et anonyme 24/7).",
+          text: "Je ressens une très vive détresse dans tes mots, et nous prenons ta sécurité extrêmement au sérieux. Sache que Mindy n'est pas un professionnel de santé et ne peut pas remplacer une aide médicale immédiate.\n\n" +
+                "Si tu penses à mettre fin à tes jours ou si tu te sens en danger, s'il te plaît, contacte immédiatement l'un de ces services d'aide gratuits, anonymes et disponibles 24h/24 :\n" +
+                "• Le 3114 : Numéro National de Prévention du Suicide\n" +
+                "• Le 15 (SAMU) ou le 112 (Numéro d'urgence européen)\n" +
+                "• S.O.S. Amitié : 09 72 39 40 50 (Écoute amicale et bienveillante)\n\n" +
+                "Tu n'es pas seul(e) face à cette souffrance, n'hésite pas à tendre la main vers ces professionnels à ton écoute.",
           timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
         };
         setMessages((prev) => [...prev, sosMsg]);
@@ -530,7 +544,7 @@ export default function Chatbot({ setPath, userProfile }: ChatbotProps) {
                       <i className="ti ti-shield-alert text-base"></i>
                       <span>Prudence immédiate</span>
                     </div>
-                    <p>{msg.text}</p>
+                    <p className="whitespace-pre-line">{msg.text}</p>
                     <div className="flex space-x-2 pt-1">
                       <button
                         onClick={() => setPath("exercices/stop-sos")}

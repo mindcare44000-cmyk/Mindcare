@@ -45,149 +45,201 @@ interface HistoricDay {
   }[];
 }
 
-const HISTORICAL_DATABASE: HistoricDay[] = [
-  {
-    id: "2026-06-07",
-    dateStr: "2026-06-07",
-    dayNum: 7,
-    weekdayLabel: "Jeu",
-    weekdayFull: "Jeudi",
-    frenchDisplayDate: "Jeudi 7 juin",
-    mood: 3,
-    moodLabel: "Nuageux",
-    moodEmoji: "☁️",
-    pressure: "Modéré",
-    pressureLevel: 42,
-    energy: "Correcte",
-    energyLevel: 65,
-    notes: "Tu as évoqué une pression au travail liée à un projet urgent. La conversation t'a aidé à mettre des mots dessus et à te sentir un peu plus léger.",
-    themes: ["Travail", "Stress", "Gestion des émotions"],
-    exercises: [
-      { name: "Cohérences cardiaque", duration: "5 min", subtitle: "Rythme 5/5", icon: "ti ti-screen-share" },
-      { name: "Respiration carrée", duration: "3 min", subtitle: "Cycle 4 temps", icon: "ti ti-wind" }
-    ]
-  },
-  {
-    id: "2026-06-06",
-    dateStr: "2026-06-06",
-    dayNum: 6,
-    weekdayLabel: "Mer",
-    weekdayFull: "Mercredi",
-    frenchDisplayDate: "Mercredi 6 juin",
-    mood: 4,
-    moodLabel: "Éclaircie",
-    moodEmoji: "⛅",
-    pressure: "Modérée",
-    pressureLevel: 35,
-    energy: "Modérée",
-    energyLevel: 55,
-    notes: "Aujourd'hui, tu as partagé un moment rassurant avec tes proches. Discuter t'a libéré l'esprit et renforcé ton sentiment d'ancrage.",
-    themes: ["Famille", "Détente", "Soutien"],
-    exercises: [
-      { name: "Ancrage sensoriel", duration: "5 min", subtitle: "Méthode 5-4-3-2-1", icon: "ti ti-eye" }
-    ]
-  },
-  {
-    id: "2026-06-05",
-    dateStr: "2026-06-05",
-    dayNum: 5,
-    weekdayLabel: "Mar",
-    weekdayFull: "Mardi",
-    frenchDisplayDate: "Mardi 5 juin",
-    mood: 4,
-    moodLabel: "Éclaircie",
-    moodEmoji: "⛅",
-    pressure: "Faible",
-    pressureLevel: 20,
-    energy: "Modérée",
-    energyLevel: 60,
-    notes: "Tu as décrit une journée sereine avec une marche apaisante. Mindy t'a encouragé à continuer à te reconnecter à ton rythme naturel.",
-    themes: ["Marche active", "Nature", "Sérénité"],
-    exercises: [
-      { name: "Stretch & Soupir", duration: "2 min", subtitle: "Étirement libre", icon: "ti ti-stretching" }
-    ]
-  },
-  {
-    id: "2026-06-04",
-    dateStr: "2026-06-04",
-    dayNum: 4,
-    weekdayLabel: "Lun",
-    weekdayFull: "Lundi",
-    frenchDisplayDate: "Lundi 4 juin",
-    mood: 4,
-    moodLabel: "Éclaircie",
-    moodEmoji: "⛅",
-    pressure: "Modérée",
-    pressureLevel: 45,
-    energy: "Modérée",
-    energyLevel: 50,
-    notes: "Un début de semaine équilibré. Des respirations amples pendant les réunions t'ont permis de garder les pieds sur terre et de filtrer le bruit.",
-    themes: ["Calme", "Professionnel", "Respiration"],
-    exercises: [
-      { name: "Cohérences cardiaque", duration: "3 min", subtitle: "Harmonisation rapide", icon: "ti ti-activity" }
-    ]
-  },
-  {
-    id: "2026-06-03",
-    dateStr: "2026-06-03",
-    dayNum: 3,
-    weekdayLabel: "Dim",
-    weekdayFull: "Dimanche",
-    frenchDisplayDate: "Dimanche 3 juin",
-    mood: 2,
-    moodLabel: "Pluie",
-    moodEmoji: "🌧️",
-    pressure: "Élevée",
-    pressureLevel: 80,
-    energy: "Basse",
-    energyLevel: 25,
-    notes: "Un coucher agité avec quelques ruminations. Mindy a proposé d'imaginer des nuages emportant tes pensées restrictives pour t'apaiser.",
-    themes: ["Anxiété", "Sommeil", "Ruminations"],
-    exercises: [
-      { name: "Méditation des Nuages", duration: "3 min", subtitle: "Sommeil paisible", icon: "ti ti-cloud" }
-    ]
-  },
-  {
-    id: "2026-06-02",
-    dateStr: "2026-06-02",
-    dayNum: 2,
-    weekdayLabel: "Sam",
-    weekdayFull: "Samedi",
-    frenchDisplayDate: "Samedi 2 juin",
-    mood: 3,
-    moodLabel: "Nuageux",
-    moodEmoji: "☁️",
-    pressure: "Faible",
-    pressureLevel: 15,
-    energy: "Correcte",
-    energyLevel: 70,
-    notes: "Repos mérité sous la couette. Tu as déconnecté ton téléphone pendant trois heures pour te donner de l'espace mental.",
-    themes: ["Repos", "Mieux-être", "Déconnexion"],
-    exercises: [
-      { name: "3 Gratitudes du Jour", duration: "3 min", subtitle: "Écriture douce", icon: "ti ti-feather" }
-    ]
-  },
-  {
-    id: "2026-06-01",
-    dateStr: "2026-06-01",
-    dayNum: 1,
-    weekdayLabel: "Ven",
-    weekdayFull: "Vendredi",
-    frenchDisplayDate: "Vendredi 1 juin",
-    mood: 5,
-    moodLabel: "Soleil",
-    moodEmoji: "☀️",
-    pressure: "Faible",
-    pressureLevel: 10,
-    energy: "Excellente",
-    energyLevel: 90,
-    notes: "Nouveau départ réussi de Juin ! MindCare accueille ton élan avec joie. Tu t'es senti libre de créer et de respirer à plein poumons.",
-    themes: ["Confiance", "Vision", "Optimisme"],
-    exercises: [
-      { name: "Affirmations Positives", duration: "2 min", subtitle: "Estime de soi", icon: "ti ti-star" }
-    ]
+const getParisCurrentYearMonth = () => {
+  try {
+    const d = new Date();
+    const tzString = d.toLocaleString("sv-SE", { timeZone: "Europe/Paris" });
+    const parts = tzString.split(" ")[0].split("-");
+    const year = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10); // 1-indexed
+    return { year, month };
+  } catch (e) {
+    const d = new Date();
+    return { year: d.getFullYear(), month: d.getMonth() + 1 };
   }
-];
+};
+
+const createDynamicHistoricalDatabase = (): HistoricDay[] => {
+  const getParisDateString = (offsetDays: number): string => {
+    try {
+      const d = new Date();
+      const tzString = d.toLocaleString("sv-SE", { timeZone: "Europe/Paris" });
+      const parisParts = tzString.split(" ")[0].split("-");
+      const year = parseInt(parisParts[0], 10);
+      const month = parseInt(parisParts[1], 10) - 1;
+      const day = parseInt(parisParts[2], 10);
+      
+      const targetDate = new Date(year, month, day);
+      targetDate.setDate(targetDate.getDate() - offsetDays);
+      
+      const yStr = targetDate.getFullYear();
+      const mStr = String(targetDate.getMonth() + 1).padStart(2, "0");
+      const dStr = String(targetDate.getDate()).padStart(2, "0");
+      return `${yStr}-${mStr}-${dStr}`;
+    } catch (e) {
+      const targetDate = new Date();
+      targetDate.setDate(targetDate.getDate() - offsetDays);
+      const yStr = targetDate.getFullYear();
+      const mStr = String(targetDate.getMonth() + 1).padStart(2, "0");
+      const dStr = String(targetDate.getDate()).padStart(2, "0");
+      return `${yStr}-${mStr}-${dStr}`;
+    }
+  };
+
+  const getParisDateObj = (offsetDays: number): Date => {
+    try {
+      const d = new Date();
+      const tzString = d.toLocaleString("sv-SE", { timeZone: "Europe/Paris" });
+      const parisParts = tzString.split(" ")[0].split("-");
+      const year = parseInt(parisParts[0], 10);
+      const month = parseInt(parisParts[1], 10) - 1;
+      const day = parseInt(parisParts[2], 10);
+      
+      const targetDate = new Date(year, month, day);
+      targetDate.setDate(targetDate.getDate() - offsetDays);
+      return targetDate;
+    } catch (e) {
+      const targetDate = new Date();
+      targetDate.setDate(targetDate.getDate() - offsetDays);
+      return targetDate;
+    }
+  };
+
+  const getWeekdayFull = (d: Date): string => {
+    const days = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
+    return days[d.getDay()];
+  };
+
+  const getWeekdayLabel = (d: Date): string => {
+    const labels = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"];
+    return labels[d.getDay()];
+  };
+
+  const getFrenchDisplayDate = (d: Date): string => {
+    const weekdays = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
+    const months = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
+    return `${weekdays[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]}`;
+  };
+
+  const templates = [
+    {
+      mood: 3,
+      moodLabel: "Nuageux",
+      moodEmoji: "☁️",
+      pressure: "Modéré",
+      pressureLevel: 42,
+      energy: "Correcte",
+      energyLevel: 65,
+      notes: "Tu as évoqué une pression au travail liée à un projet urgent. La conversation t'a aidé à mettre des mots dessus et à te sentir un peu plus léger.",
+      themes: ["Travail", "Stress", "Gestion des émotions"],
+      exercises: [
+        { name: "Cohérence cardiaque", duration: "5 min", subtitle: "Rythme 5/5", icon: "ti ti-screen-share" },
+        { name: "Respiration carrée", duration: "3 min", subtitle: "Cycle 4 temps", icon: "ti ti-wind" }
+      ]
+    },
+    {
+      mood: 4,
+      moodLabel: "Éclaircie",
+      moodEmoji: "⛅",
+      pressure: "Modérée",
+      pressureLevel: 35,
+      energy: "Modérée",
+      energyLevel: 55,
+      notes: "Aujourd'hui, tu as partagé un moment rassurant avec tes proches. Discuter t'a libéré l'esprit et renforcé ton sentiment d'ancrage.",
+      themes: ["Famille", "Détente", "Soutien"],
+      exercises: [
+        { name: "Ancrage sensoriel", duration: "5 min", subtitle: "Méthode 5-4-3-2-1", icon: "ti ti-eye" }
+      ]
+    },
+    {
+      mood: 4,
+      moodLabel: "Éclaircie",
+      moodEmoji: "⛅",
+      pressure: "Faible",
+      pressureLevel: 20,
+      energy: "Modérée",
+      energyLevel: 60,
+      notes: "Tu as décrit une journée sereine avec une marche apaisante. Mindy t'a encouragé à continuer à te reconnecter à ton rythme naturel.",
+      themes: ["Marche active", "Nature", "Sérénité"],
+      exercises: [
+        { name: "Stretch & Soupir", duration: "2 min", subtitle: "Étirement libre", icon: "ti ti-stretching" }
+      ]
+    },
+    {
+      mood: 4,
+      moodLabel: "Éclaircie",
+      moodEmoji: "⛅",
+      pressure: "Modérée",
+      pressureLevel: 45,
+      energy: "Modérée",
+      energyLevel: 50,
+      notes: "Un début de semaine équilibré. Des respirations amples pendant les réunions t'ont permis de garder les pieds sur terre et de filtrer le bruit.",
+      themes: ["Calme", "Professionnel", "Respiration"],
+      exercises: [
+        { name: "Cohérence cardiaque", duration: "3 min", subtitle: "Harmonisation rapide", icon: "ti ti-activity" }
+      ]
+    },
+    {
+      mood: 2,
+      moodLabel: "Pluie",
+      moodEmoji: "🌧️",
+      pressure: "Élevée",
+      pressureLevel: 80,
+      energy: "Basse",
+      energyLevel: 25,
+      notes: "Un coucher agité avec quelques ruminations. Mindy a proposé d'imaginer des nuages emportant tes pensées restrictives pour t'apaiser.",
+      themes: ["Anxiété", "Sommeil", "Ruminations"],
+      exercises: [
+        { name: "Méditation des Nuages", duration: "3 min", subtitle: "Sommeil paisible", icon: "ti ti-cloud" }
+      ]
+    },
+    {
+      mood: 3,
+      moodLabel: "Nuageux",
+      moodEmoji: "☁️",
+      pressure: "Faible",
+      pressureLevel: 15,
+      energy: "Correcte",
+      energyLevel: 70,
+      notes: "Repos mérité sous la couette. Tu as déconnecté ton téléphone pendant trois heures pour te donner de l'espace mental.",
+      themes: ["Repos", "Mieux-être", "Déconnexion"],
+      exercises: [
+        { name: "3 Gratitudes du Jour", duration: "3 min", subtitle: "Écriture douce", icon: "ti ti-feather" }
+      ]
+    },
+    {
+      mood: 5,
+      moodLabel: "Soleil",
+      moodEmoji: "☀️",
+      pressure: "Faible",
+      pressureLevel: 10,
+      energy: "Excellente",
+      energyLevel: 90,
+      notes: "Nouveau départ réussi ! MindCare accueille ton élan avec joie. Tu t'es senti libre de créer et de respirer à pleins poumons.",
+      themes: ["Confiance", "Vision", "Optimisme"],
+      exercises: [
+        { name: "Affirmations Positives", duration: "2 min", subtitle: "Estime de soi", icon: "ti ti-star" }
+      ]
+    }
+  ];
+
+  return templates.map((tpl, index) => {
+    const offset = index + 1; // index 0 is J-1, index 6 is J-7
+    const dateStr = getParisDateString(offset);
+    const dateObj = getParisDateObj(offset);
+    return {
+      id: dateStr,
+      dateStr: dateStr,
+      dayNum: dateObj.getDate(),
+      weekdayLabel: getWeekdayLabel(dateObj),
+      weekdayFull: getWeekdayFull(dateObj),
+      frenchDisplayDate: getFrenchDisplayDate(dateObj),
+      ...tpl
+    };
+  });
+};
+
+const HISTORICAL_DATABASE = createDynamicHistoricalDatabase();
 
 export default function History({ currentPath, setPath, userProfile, checkIns }: HistoryProps) {
   // Navigation inside history page
@@ -292,20 +344,69 @@ export default function History({ currentPath, setPath, userProfile, checkIns }:
   const activeDay = getSelectedDayData();
 
   // Calendar render constants
-  const JuneGridDays: CalendarDayItem[] = [
-    // We start June 2026 on Friday (so under V).
-    // Weekdays are: L M M J V S D
-    // Friday start means L, M, M, J are empty (4 spaces)
-    { isPlaceholder: true, key: "p1", day: undefined, dateStr: undefined },
-    { isPlaceholder: true, key: "p2", day: undefined, dateStr: undefined },
-    { isPlaceholder: true, key: "p3", day: undefined, dateStr: undefined },
-    { isPlaceholder: true, key: "p4", day: undefined, dateStr: undefined },
-    // Month Days 1 to 30
-    ...Array.from({ length: 30 }, (_, i) => {
+  const { year: currentYear, month: currentMonth } = getParisCurrentYearMonth();
+  const [calendarYear, setCalendarYear] = useState(currentYear);
+  const [calendarMonth, setCalendarMonth] = useState(currentMonth);
+
+  const handlePrevMonth = () => {
+    setCalendarMonth((prev) => {
+      if (prev === 1) {
+        setCalendarYear((y) => y - 1);
+        return 12;
+      }
+      return prev - 1;
+    });
+  };
+
+  const handleNextMonth = () => {
+    setCalendarMonth((prev) => {
+      if (prev === 12) {
+        setCalendarYear((y) => y + 1);
+        return 1;
+      }
+      return prev + 1;
+    });
+  };
+
+  const getMonthGridDays = (year: number, month: number): CalendarDayItem[] => {
+    // First day of interest
+    const firstDay = new Date(year, month - 1, 1);
+    const startDayOfWeek = firstDay.getDay(); // 0 is Sunday, 1 is Monday ... 6 is Saturday
+    
+    // We want Monday (1) to Sunday (0) indexing: L M M J V S D
+    // Monday is column 0, Sunday is column 6
+    const emptySpaces = startDayOfWeek === 0 ? 6 : startDayOfWeek - 1;
+    
+    const placeholders: CalendarDayItem[] = Array.from({ length: emptySpaces }, (_, i) => ({
+      isPlaceholder: true,
+      key: `p-${i}`,
+      day: undefined,
+      dateStr: undefined,
+    }));
+    
+    const totalDays = new Date(year, month, 0).getDate();
+    
+    const monthDays: CalendarDayItem[] = Array.from({ length: totalDays }, (_, i) => {
       const day = i + 1;
-      const dateStr = `2026-06-${day.toString().padStart(2, "0")}`;
-      return { isPlaceholder: false, day, dateStr, key: dateStr };
-    })
+      const mStr = String(month).padStart(2, "0");
+      const dStr = String(day).padStart(2, "0");
+      const dateStr = `${year}-${mStr}-${dStr}`;
+      return {
+        isPlaceholder: false,
+        day,
+        dateStr,
+        key: dateStr,
+      };
+    });
+    
+    return [...placeholders, ...monthDays];
+  };
+
+  const JuneGridDays = getMonthGridDays(calendarYear, calendarMonth);
+
+  const FRENCH_MONTH_NAMES = [
+    "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
+    "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"
   ];
 
   // Pastelle color cells for visual heatmap rendering
@@ -459,13 +560,19 @@ export default function History({ currentPath, setPath, userProfile, checkIns }:
               </div>
               
               <div className="flex items-center space-x-1.5 bg-[#FAF8F5] border border-[#F4F1EA] py-1.5 px-3 rounded-full shadow-xs">
-                <button className="p-1 hover:text-zinc-805 text-zinc-400 active:scale-90 transition cursor-pointer">
+                <button
+                  onClick={handlePrevMonth}
+                  className="p-1 hover:text-zinc-800 text-zinc-400 active:scale-90 transition cursor-pointer"
+                >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
-                <span className="text-xs font-semibold text-zinc-700 px-1">
-                  Juin 2026
+                <span className="text-xs font-semibold text-zinc-700 px-1 min-w-[100px] text-center">
+                  {FRENCH_MONTH_NAMES[calendarMonth - 1]} {calendarYear}
                 </span>
-                <button className="p-1 hover:text-zinc-850 text-zinc-400 active:scale-90 transition cursor-pointer">
+                <button
+                  onClick={handleNextMonth}
+                  className="p-1 hover:text-zinc-800 text-zinc-400 active:scale-90 transition cursor-pointer"
+                >
                   <ChevronRight className="w-4 h-4" />
                 </button>
               </div>
